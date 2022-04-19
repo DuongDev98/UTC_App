@@ -40,6 +40,7 @@ class Login extends Component {
         {
             //lưu thông tin đăng nhập
             AsyncStorage.setItem(Contants.User, JSON.stringify(data.data));
+            this.props.navigation.navigate("MainSc");
         }
         else
         {
