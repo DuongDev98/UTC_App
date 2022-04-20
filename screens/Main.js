@@ -18,10 +18,10 @@ class Main extends Component {
                 { key: 'account', title: 'Account', icon: 'account' }
             ],
             renderScene : BottomNavigation.SceneMap({
-                "home": ()=><Home/>,
-                "feed": ()=><Feed/>,
-                "cart": ()=><Cart/>,
-                "account": ()=><Account/>,
+                "home": ()=><Home navigation={this.props.navigation}/>,
+                "feed": ()=><Feed navigation={this.props.navigation}/>,
+                "cart": ()=><Cart navigation={this.props.navigation}/>,
+                "account": ()=><Account navigation={this.props.navigation}/>,
             })
         };
     }

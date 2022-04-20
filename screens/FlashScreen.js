@@ -24,7 +24,18 @@ class FlashScreen extends Component {
                 let user_info = await AsyncStorage.getItem(Contants.User);
                 if (user_info != null && user_info.length > 0)
                 {
-                    this.props.navigation.navigate("MainSc");
+                    //cập nhật thông tin nếu có thay đổi
+                    let o = JSON.parse(user_info);
+                    let json = await HttpClient.GetJson("getUserInfo", o);
+                    if (json.isSuccess)
+                    {
+                        AsyncStorage.setItem(Contants.User, JSON.stringify(json.data));
+                        this.props.navigation.navigate("MainSc");
+                    }
+                    else
+                    {
+                        alert(json.message);
+                    }
                 }
                 else
                 {
