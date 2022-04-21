@@ -24,7 +24,7 @@ class Account extends Component {
     }
 
     editProfile() {
-        this.props.navigation.navigate("EditProfileSc");
+        this.props.navigation.navigate("EditProfileSc", this.state.user);
     }
 
     render() {
