@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Avatar, Button, IconButton, Badge } from 'react-native-paper';
 import Contants from '../utils/Contants';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import HttpClient from '../utils/HttpClient';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 class Account extends Component {
 
@@ -29,6 +30,30 @@ class Account extends Component {
     danhSachDonHang(trangthai) {
         alert("danh sach don hang");
     }
+
+    async uploadAvatar() {
+        let img = await launchImageLibrary({ mediaType: 'photo', includeBase64: true });
+        if (!img.didCancel)
+        {
+            img.khachhangid = this.state.user.ID;
+            let json = await HttpClient.GetJson("uploadavatar", img);
+            if (json.isSuccess)
+            {
+                //doi thong tin anh tren store
+                let o = this.state.user;
+                o.AVATAR = json.data.img;
+                AsyncStorage.setItem(Contants.User, JSON.stringify(o), ()=>{
+                    this.setState({user: o}, ()=>{
+                        alert("Cập nhật avatar thành công");
+                    });
+                });
+            }
+            else
+            {
+                alert(json.message)
+            }
+        }
+    }
     
     render() {
         return (
@@ -37,7 +62,9 @@ class Account extends Component {
                     this.state.user == null ? null : 
                     <View style={styles.container}>
                         <View style={styles.rowuser}>
-                            <Avatar.Image size={64} source={{ uri: Contants.ImgUri + this.state.user.AVATAR}}  />
+                            <TouchableOpacity onPress={()=>this.uploadAvatar()}>
+                                <Avatar.Image size={64} source={{ uri: Contants.ImgUri + this.state.user.AVATAR}}  />
+                            </TouchableOpacity>
                             <View style={styles.containerLblName}>
                                 <Text style={styles.lblName}>{this.state.user.NAME}</Text>
                             </View>
