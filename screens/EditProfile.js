@@ -143,7 +143,7 @@ class EditProfile extends Component {
                         >
                             {
                                 datatinhthanh.map((val, i)=>{
-                                    return <Picker.Item label={val.NAME} value={val.ID} />;
+                                    return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
                                 })
                             }
                         </Picker>
@@ -161,7 +161,7 @@ class EditProfile extends Component {
                         >
                             {
                                 dataquanhuyen.map((val, i)=>{
-                                    return <Picker.Item label={val.NAME} value={val.ID} />;
+                                    return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
                                 })
                             }
                         </Picker>
@@ -175,7 +175,8 @@ class EditProfile extends Component {
                         >
                             {
                                 dataphuongxa.map((val, i)=>{
-                                    return <Picker.Item label={val.NAME} value={val.ID} />;
+                                    val.key = val.ID;
+                                    return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
                                 })
                             }
                         </Picker>

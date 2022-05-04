@@ -1,11 +1,14 @@
 import React from 'react';
 import AppStore from './screens/HandleScreens';
 import { Provider as PaperProvider } from 'react-native-paper';
+import { SafeAreaView } from 'react-native';
 class App extends React.Component {
   render(){    
     return (
       <PaperProvider>
-        <AppStore/>
+        <SafeAreaView style={{flex: 1}}>
+          <AppStore/>
+        </SafeAreaView>
       </PaperProvider>
     )};
 };

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { FlatList, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import HttpClient from '../utils/HttpClient';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 class Feed extends Component {
 
@@ -37,11 +38,18 @@ class Feed extends Component {
     render() {
         return (
             <View style={styles.container}>
+                <View style={styles.topbar}>
+                    <View style={styles.pntitle}>
+                        <Icon style={styles.title} name='leaf-outline' size={30}/>
+                        <Text style={[styles.title, {fontSize: 25}]}>Tin tức</Text>
+                        <Icon style={styles.title} name='leaf-outline' size={30}/>
+                    </View>
+                </View>
                 {
                     this.state.tinTucs == null ?
-                        <Text style={{fontSize: 20}}>Tin tức trống</Text>
+                        <Text style={{fontSize: 20, marginTop: 10}}>Tin tức trống</Text>
                     :
-                    <FlatList
+                    <FlatList style={{ padding: 10 }}
                         data={this.state.tinTucs}
                         renderItem={({item}) => <View style={styles.item}>
                             <TouchableOpacity onPress={()=>this.onPress(item)}>
@@ -59,13 +67,13 @@ class Feed extends Component {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      padding: 5,
-      backgroundColor: "white-smoke"
+    //   padding: 5,
+    //   backgroundColor: "white-smoke"
     },
     item: {
         padding: 10,
-        backgroundColor: '#ffe6a1',
-        marginBottom: 5,
+        backgroundColor: 'white',
+        marginBottom: 10,
         borderRadius: 10,
     },
     time: {
@@ -75,8 +83,21 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 22,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        margin: 5
     },
+    topbar: {
+        flexDirection: 'row',
+        height:60,
+        justifyContent: 'center',
+        backgroundColor: '#ffe6a1',
+    },
+    pntitle: {
+        fontSize: 25,
+        marginTop: 'auto',
+        marginBottom: 'auto',
+        flexDirection: 'row'
+    }
 });
 
 export default Feed;
