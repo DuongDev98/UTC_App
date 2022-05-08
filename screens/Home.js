@@ -48,8 +48,25 @@ class Home extends Component {
     if (this.state.search.length == 0) {
       alert('Bạn chưa nhập dữ liệu để tìm kiếm');
     } else {
-      this.props.navigation.navigate('DanhSachTimKiemSc');
+      let o = {};
+      o.title = "Kết quả tìm kiếm";
+      o.s = this.state.search;
+      this.props.navigation.navigate('DanhSachMatHangSc', o);
     }
+  }
+
+  thuongHieuClick(thuongHieuId) {
+    let o = {};
+    o.thuongHieuId= thuongHieuId;
+    o.title = "Danh sách mặt hàng";
+    this.props.navigation.navigate('DanhSachMatHangSc', o);
+  }
+
+  nhomClick(nhomId) {
+    let o = {};
+    o.nhomId= nhomId;
+    o.title = "Danh sách mặt hàng";
+    this.props.navigation.navigate('DanhSachMatHangSc', o);
   }
 
   render() {
@@ -82,7 +99,7 @@ class Home extends Component {
               <View style={styles.pnNhom}>
                 {this.state.dataThuongHieus.map((item, index) => {
                   return (
-                    <TouchableOpacity key={item.ID} style={styles.itNhom}>
+                    <TouchableOpacity key={item.ID} style={styles.itNhom} onPress={()=>this.thuongHieuClick(item.ID)}>
                       <Text key={item.ID} style={styles.textNhom}>
                         {item.NAME}
                       </Text>
@@ -104,14 +121,14 @@ class Home extends Component {
                     </Text>
                     <TouchableOpacity
                       style={{marginLeft: 'auto'}}
-                      onPress={() => {}}>
+                      onPress={()=>this.nhomClick(item.ID)}>
                       <Text style={{color: 'blue'}}>Xem tất cả</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={{}}>
                     <ScrollView horizontal={true}>
                       {item.DMATHANGs.map((mhRow, index) => {
-                        return <MatHangItemList key={mhRow.ID} data={mhRow} />;
+                        return <MatHangItemList navigation={this.props.navigation} key={mhRow.ID} data={mhRow} />;
                       })}
                     </ScrollView>
                   </View>
