@@ -19,7 +19,7 @@ class Cart extends Component {
         element.SOLUONG += 1;
       }
     });
-    Memory.setCartItem(arr).then(() => {
+    Memory.SetCartItem(arr).then(() => {
       this.setState({arr: arr});
     });
   }
@@ -33,7 +33,24 @@ class Cart extends Component {
         }
       }
     });
-    Memory.setCartItem(arr).then(() => {
+    Memory.SetCartItem(arr).then(() => {
+      this.setState({arr: arr});
+    });
+  }
+
+  xoaMatHang(item) {
+    let arr = this.state.arr;
+    let index = -1, remove = -1;
+    arr.forEach(element => {
+      index++;
+      if (element.DMATHANGID == item.DMATHANGID) {
+        remove = index;
+      }
+    });
+    if (remove >= 0) {
+      arr.splice(remove, 1);
+    }
+    Memory.RemoveToCart(item.DMATHANGID).then(() => {
       this.setState({arr: arr});
     });
   }
@@ -64,6 +81,11 @@ class Cart extends Component {
               onPress={() => this.tangSl(item)}>
               <MaterialCommunityIcons name="numeric-positive-1" size={35} />
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.btn, {backgroundColor: 'red'}]}
+              onPress={() => this.xoaMatHang(item)}>
+              <MaterialCommunityIcons color={'white'} name="trash-can-outline" size={35} />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -74,7 +96,7 @@ class Cart extends Component {
   async loadDataFromMemory() {
     if (this.loadding) return;
     this.loadding = true;
-    let arr = await Memory.getCartItem();
+    let arr = await Memory.GetCartItem();
     this.setState(
       {
         arr: arr,

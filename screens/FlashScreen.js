@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import HttpClient from '../utils/HttpClient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Contants from '../utils/Contants';
+import Memory from '../utils/Memory';
 
 class FlashScreen extends Component {
 
@@ -21,15 +20,14 @@ class FlashScreen extends Component {
         {
             //nếu đã đăng nhập thì chuyển sang trang chủ
             setTimeout(async ()=> {
-                let user_info = await AsyncStorage.getItem(Contants.User);
-                if (user_info != null && user_info.length > 0)
+                let o = await Memory.GetUserInfo();
+                if (o != null)
                 {
                     //cập nhật thông tin nếu có thay đổi
-                    let o = JSON.parse(user_info);
                     let json = await HttpClient.GetJson("getUserInfo", o);
                     if (json.isSuccess)
                     {
-                        AsyncStorage.setItem(Contants.User, JSON.stringify(json.data));
+                        Memory.SetUserInfo(json.data);
                         this.props.navigation.navigate("MainSc");
                     }
                     else

@@ -2,8 +2,7 @@ import { View, StyleSheet } from 'react-native';
 import React, { Component } from 'react';
 import { Button, TextInput, HelperText, DataTable } from 'react-native-paper';
 import HttpClient from '../utils/HttpClient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Contants from '../utils/Contants';
+import Memory from '../utils/Memory';
 
 class Login extends Component {
 
@@ -39,7 +38,7 @@ class Login extends Component {
         if (data.isSuccess)
         {
             //lưu thông tin đăng nhập
-            AsyncStorage.setItem(Contants.User, JSON.stringify(data.data));
+            Memory.SetUserInfo(data.data);
             this.props.navigation.navigate("MainSc");
         }
         else

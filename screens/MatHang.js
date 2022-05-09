@@ -24,7 +24,7 @@ class MatHang extends Component {
   }
 
   async componentDidMount() {
-    let json = await HttpClient.GetJson('ThongTinMatHang', {
+    let json = await HttpClient.GetJson('thongTinMatHang', {
       ID: this.props.route.params,
     });
     if (json.isSuccess) {

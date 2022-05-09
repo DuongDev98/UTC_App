@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import LoginSc from './Login';
 import RegisterSc from './Register';
 import { TabView, SceneMap } from 'react-native-tab-view';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Memory from '../utils/Memory';
 
 class Login_Register extends Component {
 
@@ -22,7 +22,7 @@ class Login_Register extends Component {
     }
 
     componentDidMount() {
-        AsyncStorage.clear();
+        Memory.ClearData();
     }
 
     render () {
