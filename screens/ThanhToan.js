@@ -5,6 +5,12 @@ import {TextInput, Button, IconButton} from 'react-native-paper';
 import {Picker} from '@react-native-picker/picker';
 import HttpClient from '../utils/HttpClient';
 
+// import { LogBox } from 'react-native';
+
+// LogBox.ignoreLogs([
+//   'Non-serializable values were found in the navigation state',
+// ]);
+
 class ThanhToan extends Component {
   constructor() {
     super();
@@ -84,7 +90,9 @@ class ThanhToan extends Component {
     donHang.TDONHANGCHITIETs = dsChiTiet;
     let json = await HttpClient.GetJson('thucHienThanhToan', donHang);
     if (json.isSuccess) {
-      alert('Thanh toán thành công');
+      await Memory.SetCartItem(null);      
+      this.props.route.params.onClearCart();
+      this.props.navigation.goBack();
     } else {
       alert(json.message);
     }

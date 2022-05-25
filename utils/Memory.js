@@ -1,11 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Contants from './Contants';
 class Memory {
-
-  //clear
-  static async ClearData() {
-    AsyncStorage.clear();
-  }
   
   //userinfo
   static async GetUserInfo() {

@@ -12,6 +12,12 @@ class Cart extends Component {
     };
   }
 
+  onClearCart() {
+    this.setState({
+      arr: null
+    });
+  }
+
   tangSl(item) {
     let arr = this.state.arr;
     arr.forEach(element => {
@@ -116,7 +122,7 @@ class Cart extends Component {
   }
 
   thanhToan() {
-    this.props.navigation.navigate('ThanhToanSc');
+    this.props.navigation.navigate('ThanhToanSc', {onClearCart: this.onClearCart});
   }
 
   render() {

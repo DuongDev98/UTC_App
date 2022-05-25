@@ -20,6 +20,7 @@ class FlashScreen extends Component {
         {
             //nếu đã đăng nhập thì chuyển sang trang chủ
             setTimeout(async ()=> {
+                //await Memory.SetUserInfo(null);
                 let o = await Memory.GetUserInfo();
                 if (o != null)
                 {

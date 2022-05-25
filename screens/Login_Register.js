@@ -22,7 +22,7 @@ class Login_Register extends Component {
     }
 
     componentDidMount() {
-        Memory.ClearData();
+        Memory.SetUserInfo(null);
     }
 
     render () {
