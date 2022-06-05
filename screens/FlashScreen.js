@@ -1,65 +1,61 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import HttpClient from '../utils/HttpClient';
 import Memory from '../utils/Memory';
 
-class FlashScreen extends Component {
+function FlashScreen({navigation}) {
 
-    constructor() {
-        super();
-        this.state = {
-            user_info: null
-        };
-    }
-
-    async componentDidMount() {
-
+    useEffect(()=>{
         //Kiểm tra có kết nối mạng hay không
-        let data = await HttpClient.GetJson("ping", {});
-        if (data.isSuccess)
-        {
-            //nếu đã đăng nhập thì chuyển sang trang chủ
-            setTimeout(async ()=> {
-                //await Memory.SetUserInfo(null);
-                let o = await Memory.GetUserInfo();
-                if (o != null)
-                {
-                    //cập nhật thông tin nếu có thay đổi
-                    let json = await HttpClient.GetJson("getUserInfo", o);
-                    if (json.isSuccess)
+        HttpClient.GetJson("ping", {}).then(data=>{
+            if (data.isSuccess)
+            {
+                //nếu đã đăng nhập thì chuyển sang trang chủ
+                setTimeout(async ()=> {
+                    //await Memory.SetUserInfo(null);
+                    let o = await Memory.GetUserInfo();
+                    if (o != null)
                     {
-                        Memory.SetUserInfo(json.data);
-                        this.props.navigation.navigate("MainSc");
+                        //cập nhật thông tin nếu có thay đổi
+                        HttpClient.GetJson("getUserInfo", o).then(json=>{
+                            if (json.isSuccess)
+                            {
+                                //Memory.SetUserInfo(json.data);
+                                navigation.navigate("MainSc");
+                            }
+                            else
+                            {
+                                alert(json.message);
+                            }
+                        }).catch(err=>{
+                            alert(err);
+                        });;
                     }
                     else
                     {
-                        alert(json.message);
+                        navigation.navigate("Login_Register_Sc");
                     }
-                }
-                else
-                {
-                    this.props.navigation.navigate("Login_Register_Sc");
-                }
-            }, 100);
-        }
-        else
-        {
-            alert("Không thể kết nối đến máy chủ");
-        }
-    }
+                }, 100);
+            }
+            else
+            {
+                alert("Không thể kết nối đến máy chủ");
+            }
+        }).catch(err=>{
+            alert(err);
+        });;
+    });
 
-    render() {
-        return (
-            <View style={styles.container}>
-                <Text>
-                    ĐỒ ÁN TỐT NGHIỆP
-                </Text>
-                <Text>
-                    Nguyễn Ngọc Dương
-                </Text>
-            </View>
-        );
-    }
+    return (
+        <View style={styles.container}>
+            <Text>
+                ĐỒ ÁN TỐT NGHIỆP
+            </Text>
+            <Text>
+                Nguyễn Ngọc Dương
+            </Text>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

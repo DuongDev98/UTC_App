@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -13,20 +13,42 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import HttpClient from '../utils/HttpClient';
 import MatHangItemList from './items/MatHangItemList';
 
-class Home extends Component {
-  constructor() {
-    super();
-    this.state = {
-      search: '',
-      dataThuongHieus: [],
-      dataNhomHangs: [],
-    };
+function timKiemMatHang(navigation, search) {
+  if (search.length == 0) {
+    alert('Bạn chưa nhập dữ liệu để tìm kiếm');
+  } else {
+    let o = {};
+    o.title = 'Kết quả tìm kiếm';
+    o.s = search;
+    navigation.navigate('DanhSachMatHangSc', o);
   }
+}
 
-  componentDidMount() {
+function thuongHieuClick(navigation, thuongHieuId) {
+  let o = {};
+  o.thuongHieuId = thuongHieuId;
+  o.title = 'Danh sách mặt hàng';
+  navigation.navigate('DanhSachMatHangSc', o);
+}
+
+function nhomClick(navigation, nhomId) {
+  let o = {};
+  o.nhomId = nhomId;
+  o.title = 'Danh sách mặt hàng';
+  navigation.navigate('DanhSachMatHangSc', o);
+}
+
+function Home({navigation}) {
+  const [search, setSearch] = useState('');
+  const [dataThuongHieus, setDataThuongHieus] = useState([]);
+  const [dataNhomHangs, setDataNhomHangs] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+
     HttpClient.GetJson('dsThuongHieu', null).then(json => {
       if (json.isSuccess) {
-        this.setState({dataThuongHieus: json.data.arr});
+        if (isMounted) setDataThuongHieus(json.data.arr);
       } else {
         alert(json.message);
       }
@@ -37,109 +59,95 @@ class Home extends Component {
         json.data.arr.forEach(element => {
           element.data = element.DMATHANGs;
         });
-        this.setState({dataNhomHangs: json.data.arr});
+        if (isMounted) setDataNhomHangs(json.data.arr);
       } else {
         alert(json.message);
       }
     });
-  }
 
-  timKiemMatHang() {
-    if (this.state.search.length == 0) {
-      alert('Bạn chưa nhập dữ liệu để tìm kiếm');
-    } else {
-      let o = {};
-      o.title = "Kết quả tìm kiếm";
-      o.s = this.state.search;
-      this.props.navigation.navigate('DanhSachMatHangSc', o);
-    }
-  }
+    return () => {
+      isMounted = false;
+    };
+  });
 
-  thuongHieuClick(thuongHieuId) {
-    let o = {};
-    o.thuongHieuId= thuongHieuId;
-    o.title = "Danh sách mặt hàng";
-    this.props.navigation.navigate('DanhSachMatHangSc', o);
-  }
-
-  nhomClick(nhomId) {
-    let o = {};
-    o.nhomId= nhomId;
-    o.title = "Danh sách mặt hàng";
-    this.props.navigation.navigate('DanhSachMatHangSc', o);
-  }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        {/* top */}
-        <View style={styles.topbar}>
-          <View style={styles.pntitle}>
-            <Icon style={styles.title} name="heart-outline" size={30} />
-            <Text style={[styles.title, {fontSize: 25}]}>Trang chủ</Text>
-            <Icon style={styles.title} name="heart-outline" size={30} />
-          </View>
+  return (
+    <View style={styles.container}>
+      {/* top */}
+      <View style={styles.topbar}>
+        <View style={styles.pntitle}>
+          <Icon style={styles.title} name="heart-outline" size={30} />
+          <Text style={[styles.title, {fontSize: 25}]}>Trang chủ</Text>
+          <Icon style={styles.title} name="heart-outline" size={30} />
         </View>
-        {/* tim kiem */}
-        <View style={styles.pnSearch}>
-          <Searchbar
-            value={this.state.search}
-            onChangeText={text => {
-              this.setState({search: text});
-            }}
-            onEndEditing={() => this.timKiemMatHang()}
-            onIconPress={() => this.timKiemMatHang()}
-          />
-        </View>
-        <ScrollView>
-          {/* danh sach thuong hieu */}
-          <View style={{padding: 10}}>
-            <Text style={styles.titleNhom}>Thương hiệu</Text>
-            <ScrollView horizontal={true}>
-              <View style={styles.pnNhom}>
-                {this.state.dataThuongHieus.map((item, index) => {
-                  return (
-                    <TouchableOpacity key={item.ID} style={styles.itNhom} onPress={()=>this.thuongHieuClick(item.ID)}>
-                      <Text key={item.ID} style={styles.textNhom}>
-                        {item.NAME}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </ScrollView>
-          </View>
-          {/* danh sach nhom hang theo hang ngang, nut xem them */}
-          <View style={{padding: 10}}>
-            <Text style={styles.titleNhom}>Nhóm hàng</Text>
-            {this.state.dataNhomHangs.map((item, i) => {
-              return (
-                <View key={item.ID}>
-                  <View style={{flexDirection: 'row', padding: 10}}>
-                    <Text style={{fontWeight: 'bold', fontSize: 20}}>
+      </View>
+      {/* tim kiem */}
+      <View style={styles.pnSearch}>
+        <Searchbar
+          value={search}
+          onChangeText={text => {
+            setSearch(text);
+          }}
+          onEndEditing={() => timKiemMatHang(navigation, search)}
+          onIconPress={() => timKiemMatHang(navigation, search)}
+        />
+      </View>
+      <ScrollView>
+        {/* danh sach thuong hieu */}
+        <View style={{padding: 10}}>
+          <Text style={styles.titleNhom}>Thương hiệu</Text>
+          <ScrollView horizontal={true}>
+            <View style={styles.pnNhom}>
+              {dataThuongHieus.map((item, index) => {
+                return (
+                  <TouchableOpacity
+                    key={item.ID}
+                    style={styles.itNhom}
+                    onPress={() => thuongHieuClick(navigation, item.ID)}>
+                    <Text key={item.ID} style={styles.textNhom}>
                       {item.NAME}
                     </Text>
-                    <TouchableOpacity
-                      style={{marginLeft: 'auto'}}
-                      onPress={()=>this.nhomClick(item.ID)}>
-                      <Text style={{color: 'blue'}}>Xem tất cả</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={{}}>
-                    <ScrollView horizontal={true}>
-                      {item.DMATHANGs.map((mhRow, index) => {
-                        return <MatHangItemList navigation={this.props.navigation} key={mhRow.ID} data={mhRow} />;
-                      })}
-                    </ScrollView>
-                  </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </ScrollView>
+        </View>
+        {/* danh sach nhom hang theo hang ngang, nut xem them */}
+        <View style={{padding: 10}}>
+          <Text style={styles.titleNhom}>Nhóm hàng</Text>
+          {dataNhomHangs.map((item, i) => {
+            return (
+              <View key={item.ID}>
+                <View style={{flexDirection: 'row', padding: 10}}>
+                  <Text style={{fontWeight: 'bold', fontSize: 20}}>
+                    {item.NAME}
+                  </Text>
+                  <TouchableOpacity
+                    style={{marginLeft: 'auto'}}
+                    onPress={() => nhomClick(navigation, item.ID)}>
+                    <Text style={{color: 'blue'}}>Xem tất cả</Text>
+                  </TouchableOpacity>
                 </View>
-              );
-            })}
-          </View>
-        </ScrollView>
-      </View>
-    );
-  }
+                <View style={{}}>
+                  <ScrollView horizontal={true}>
+                    {item.DMATHANGs.map((mhRow, index) => {
+                      return (
+                        <MatHangItemList
+                          navigation={navigation}
+                          key={mhRow.ID}
+                          data={mhRow}
+                        />
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </View>
+  );
 }
 
 let width = Dimensions.get('window').width / 3 - 5;

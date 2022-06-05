@@ -16,7 +16,7 @@ class HttpClient{
             const timeout = setTimeout(() => {
                 source.cancel();
                 data = undefined;
-            }, 8000);
+            }, 60000);
 
             let resp = await axios.post(Contants.Uri, param, { cancelToken: source.token });
             clearTimeout(timeout);

@@ -12,22 +12,21 @@ import ThanhToanSc from './ThanhToan';
 
 const Stack = createNativeStackNavigator();
 
-class HandleScreens extends Component {
-    render() {
-        return (
-            <NavigationContainer>
-                <Stack.Navigator>
-                    <Stack.Screen name="FlashSc" component={FlashSc} options={{ headerShown: false }} />
-                    <Stack.Screen name="Login_Register_Sc" component={Login_Register_Sc} options={{ headerShown: false }} />
-                    <Stack.Screen name="MainSc" component={MainSc} options={{ headerShown: false }} />
-                    <Stack.Screen name="EditProfileSc" component={EditProfileSc} options={{ headerShown: true, title: "Chỉnh sửa thông tin" }} />
-                    <Stack.Screen name="ViewNewsSc" component={ViewNewsSc} options={{ headerShown: true, title: "Chi tiết bài viết" }} />
-                    <Stack.Screen name="DanhSachMatHangSc" component={DanhSachMatHangSc} options={{ headerShown: true, title: "" }} />
-                    <Stack.Screen name="MatHangSc" component={MatHangSc} options={{ headerShown: true, title: "Chi tiết sản phẩm" }} />
-                    <Stack.Screen name="ThanhToanSc" component={ThanhToanSc} options={{ headerShown: true, title: "Thanh toán" }} />
-                </Stack.Navigator>
-            </NavigationContainer>
-        );
-    }
+function HandleScreens() {
+    return (
+        <NavigationContainer>
+            <Stack.Navigator>
+                <Stack.Screen name="FlashSc" component={FlashSc} options={{ headerShown: false }} />
+                <Stack.Screen name="Login_Register_Sc" component={Login_Register_Sc} options={{ headerShown: false }} />
+                <Stack.Screen name="MainSc" component={MainSc} options={{ headerShown: false }} />
+                <Stack.Screen name="EditProfileSc" component={EditProfileSc} options={{ headerShown: true, title: "Chỉnh sửa thông tin" }} />
+                <Stack.Screen name="ViewNewsSc" component={ViewNewsSc} options={{ headerShown: true, title: "Chi tiết bài viết" }} />
+                <Stack.Screen name="DanhSachMatHangSc" component={DanhSachMatHangSc} options={{ headerShown: true, title: "" }} />
+                <Stack.Screen name="MatHangSc" component={MatHangSc} options={{ headerShown: true, title: "Chi tiết sản phẩm" }} />
+                <Stack.Screen name="ThanhToanSc" component={ThanhToanSc} options={{ headerShown: true, title: "Thanh toán" }} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
 }
+
 export default HandleScreens;

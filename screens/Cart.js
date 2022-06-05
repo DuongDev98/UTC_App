@@ -1,147 +1,110 @@
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import Memory from '../utils/Memory';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {IconButton} from 'react-native-paper';
 
-class Cart extends Component {
-  constructor() {
-    super();
-    this.state = {
-      arr: null,
-    };
-  }
+function tangSl(item) {
+  // let arr = this.state.arr;
+  // arr.forEach(element => {
+  //   if (element.DMATHANGID == item.DMATHANGID) {
+  //     element.SOLUONG += 1;
+  //   }
+  // });
+  // Memory.SetCartItem(arr).then(() => {
+  //   this.setState({arr: arr});
+  // });
+}
 
-  onClearCart() {
-    this.setState({
-      arr: null
-    });
-  }
+function giamSl(item) {
+  // let arr = this.state.arr;
+  // arr.forEach(element => {
+  //   if (element.DMATHANGID == item.DMATHANGID) {
+  //     if (element.SOLUONG > 0) {
+  //       element.SOLUONG -= 1;
+  //     }
+  //   }
+  // });
+  // Memory.SetCartItem(arr).then(() => {
+  //   this.setState({arr: arr});
+  // });
+}
 
-  tangSl(item) {
-    let arr = this.state.arr;
-    arr.forEach(element => {
-      if (element.DMATHANGID == item.DMATHANGID) {
-        element.SOLUONG += 1;
-      }
-    });
-    Memory.SetCartItem(arr).then(() => {
-      this.setState({arr: arr});
-    });
-  }
+function xoaMatHang(item) {
+  // let arr = this.state.arr;
+  // let index = -1, remove = -1;
+  // arr.forEach(element => {
+  //   index++;
+  //   if (element.DMATHANGID == item.DMATHANGID) {
+  //     remove = index;
+  //   }
+  // });
+  // if (remove >= 0) {
+  //   arr.splice(remove, 1);
+  // }
+  // Memory.RemoveToCart(item.DMATHANGID).then(() => {
+  //   this.setState({arr: arr});
+  // });
+}
 
-  giamSl(item) {
-    let arr = this.state.arr;
-    arr.forEach(element => {
-      if (element.DMATHANGID == item.DMATHANGID) {
-        if (element.SOLUONG > 0) {
-          element.SOLUONG -= 1;
-        }
-      }
-    });
-    Memory.SetCartItem(arr).then(() => {
-      this.setState({arr: arr});
-    });
-  }
-
-  xoaMatHang(item) {
-    let arr = this.state.arr;
-    let index = -1, remove = -1;
-    arr.forEach(element => {
-      index++;
-      if (element.DMATHANGID == item.DMATHANGID) {
-        remove = index;
-      }
-    });
-    if (remove >= 0) {
-      arr.splice(remove, 1);
-    }
-    Memory.RemoveToCart(item.DMATHANGID).then(() => {
-      this.setState({arr: arr});
-    });
-  }
-
-  itemList(item) {
-    return (
-      <View key={item.DMATHANGID} style={styles.item}>
-        <Image style={styles.avatar} source={{uri: item.AVATAR.url}} />
-        <View style={styles.pnContent}>
-          <Text style={styles.title}>{item.NAME}</Text>
-          <Text style={styles.title}>Đơn giá: {item.DONGIA}</Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              padding: 10,
-              justifyContent: 'center',
-            }}>
-            <TouchableOpacity
-              style={styles.btn}
-              onPress={() => this.giamSl(item)}>
-              <MaterialCommunityIcons name="numeric-negative-1" size={35} />
-            </TouchableOpacity>
-            <Text style={[styles.title, {padding: 10, fontSize: 25}]}>
-              {item.SOLUONG}
-            </Text>
-            <TouchableOpacity
-              style={styles.btn}
-              onPress={() => this.tangSl(item)}>
-              <MaterialCommunityIcons name="numeric-positive-1" size={35} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.btn, {backgroundColor: 'red'}]}
-              onPress={() => this.xoaMatHang(item)}>
-              <MaterialCommunityIcons color={'white'} name="trash-can-outline" size={35} />
-            </TouchableOpacity>
-          </View>
+function itemList(item) {
+  return (
+    <View key={item.DMATHANGID} style={styles.item}>
+      <Image style={styles.avatar} source={{uri: item.AVATAR.url}} />
+      <View style={styles.pnContent}>
+        <Text style={styles.title}>{item.NAME}</Text>
+        <Text style={styles.title}>Đơn giá: {item.DONGIA}</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            padding: 10,
+            justifyContent: 'center',
+          }}>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => this.giamSl(item)}>
+            <MaterialCommunityIcons name="numeric-negative-1" size={35} />
+          </TouchableOpacity>
+          <Text style={[styles.title, {padding: 10, fontSize: 25}]}>
+            {item.SOLUONG}
+          </Text>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => this.tangSl(item)}>
+            <MaterialCommunityIcons name="numeric-positive-1" size={35} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.btn, {backgroundColor: 'red'}]}
+            onPress={() => this.xoaMatHang(item)}>
+            <MaterialCommunityIcons color={'white'} name="trash-can-outline" size={35} />
+          </TouchableOpacity>
         </View>
       </View>
-    );
-  }
+    </View>
+  );
+}
 
-  loadding = false;
-  async loadDataFromMemory() {
-    if (this.loadding) return;
-    this.loadding = true;
-    let arr = await Memory.GetCartItem();
-    this.setState(
-      {
-        arr: arr,
-      },
-      () => {
-        this.loadding = false;
-      },
-    );
-  }
+function thanhToan() {
+  //{onClearCart: this.onClearCart}
+  //navigation.navigate('ThanhToanSc');
+}
 
-  async componentDidMount() {
-    this.loadDataFromMemory();
-  }
-
-  async componentDidUpdate() {
-    this.loadDataFromMemory();
-  }
-
-  thanhToan() {
-    this.props.navigation.navigate('ThanhToanSc', {onClearCart: this.onClearCart});
-  }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        {this.state.arr == null || this.state.arr.length == 0 ? (
-          <Text>Danh sách giỏ hàng trống</Text>
-        ) : (
-          this.state.arr.map((item, index) => this.itemList(item))
-        )}
-        <IconButton
-          color="white"
-          icon={'cash-fast'}
-          style={styles.btnThanhToan}
-          onPress={() => this.thanhToan()}
-        />
-      </View>
-    );
-  }
+function Cart() {
+const [arr, setArr] = useState([]);
+  return (
+    <View style={styles.container}>
+      {arr.length == 0 ? (
+        <Text>Danh sách giỏ hàng trống</Text>
+      ) : (
+        arr.map((item, index) => itemList(item))
+      )}
+      <IconButton
+        color="white"
+        icon={'cash-fast'}
+        style={styles.btnThanhToan}
+        onPress={() => thanhToan()}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

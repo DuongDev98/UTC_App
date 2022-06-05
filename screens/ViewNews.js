@@ -1,26 +1,19 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {View, StyleSheet, Dimensions, ScrollView} from 'react-native';
 import RenderHtml from 'react-native-render-html';
 
-class ViewNews extends Component {
-
-    constructor() {
-        super();
-    }
-
-    render() {
-        return (
-            <ScrollView style={styles.container}>
-                {
-                    this.props.route.params == null ?
-                    null :
-                    <RenderHtml source={{
-                        html: this.props.route.params.NOIDUNG
-                    }} contentWidth={Dimensions.get('window').width}/>
-                }
-            </ScrollView>
-        );
-    }
+function ViewNews({route}) {  
+    return (
+        <ScrollView style={styles.container}>
+            {
+                route.params == null ?
+                null :
+                <RenderHtml source={{
+                    html: route.params.NOIDUNG
+                }} contentWidth={Dimensions.get('window').width}/>
+            }
+        </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -31,7 +24,7 @@ const styles = StyleSheet.create({
     },
     a:{
         fontWeight: '300',
-        color: '#FF3366', // make links coloured pink
+        color: '#FF3366',
     }
 });
 

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,52 +10,35 @@ import {
 import Contants from '../../utils/Contants';
 import Format from '../../utils/Format';
 
+function itemPress(navigation, ID) {
+  navigation.navigate('MatHangSc', ID);
+}
+
 let width = Dimensions.get('window').width / 2 - 30;
 let height = (width * 3) / 2;
-class MatHangItemList extends Component {
-  constructor() {
-    super();
-    this.state = {
-      item: null,
-    };
-  }
-
-  componentDidMount() {
-    this.setState({
-      item: this.props.data,
-    });
-    if (this.props.width != null) width = this.props.width;
-    if (this.props.height != null) height = this.props.height;
-  }
-
-  itemPress(ID) {
-    this.props.navigation.navigate('MatHangSc', ID);
-  }
-
-  render() {
-    return this.state.item == null ? null : (
-      <TouchableOpacity
-        style={styles.container}
-        onPress={() => this.itemPress(this.state.item.ID)}>
-        <Image
-          source={{uri: Contants.ImgUri + this.state.item.AVATAR}}
-          style={{
-            width: width - 20,
-            height: height - 90,
-            resizeMode: 'contain',
-          }}
-        />
-        <View style={styles.pnTitle}>
-          <Text style={styles.title}>{this.state.item.NAME}</Text>
-        </View>
-        <View style={styles.pnTitle}>
-          <Text style={styles.title}>
-            {Format.formatNumber(this.state.item.GIABAN)}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
+function MatHangItemList ({navigation, data}) {
+  return data == null ? null : (
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => itemPress(navigation, data.ID)}>
+      <Image
+        source={{uri: Contants.ImgUri + data.AVATAR}}
+        style={{
+          width: width - 20,
+          height: height - 90,
+          resizeMode: 'contain',
+        }}
+      />
+      <View style={styles.pnTitle}>
+        <Text style={styles.title}>{data.NAME}</Text>
+      </View>
+      <View style={styles.pnTitle}>
+        <Text style={styles.title}>
+          {Format.formatNumber(data.GIABAN)}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({

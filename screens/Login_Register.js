@@ -1,41 +1,35 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import LoginSc from './Login';
 import RegisterSc from './Register';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import Memory from '../utils/Memory';
 
-class Login_Register extends Component {
+function Login_Register({navigation}) {
 
-    constructor () {
-        super();
-        this.state = {
-            index: 0,
-            routes: [
-                { key: 'LoginSc', title: 'Đăng nhập' }, 
-                { key: 'RegisterSc', title: 'Đăng ký' }
-            ],
-            renderScene: SceneMap({
-                "LoginSc": ()=> <LoginSc navigation={this.props.navigation}/>,
-                "RegisterSc": ()=> <RegisterSc navigation={this.props.navigation}/>,
-            })
-        };
-    }
+    let [index, setIndex] = useState(0);
+    let [routes, setRoutes] = useState([
+        { key: 'LoginSc', title: 'Đăng nhập' },
+        { key: 'RegisterSc', title: 'Đăng ký' }
+    ]);
 
-    componentDidMount() {
-        Memory.SetUserInfo(null);
-    }
+    let renderScene = SceneMap({
+        "LoginSc": ()=> <LoginSc navigation={navigation}/>,
+        "RegisterSc": ()=> <RegisterSc navigation={navigation}/>,
+    });
 
-    render () {
-        return (
-            <>
-                <TabView
-                    navigationState={this.state}
-                    renderScene={this.state.renderScene}
-                    onIndexChange={index=>{ this.setState({index: index}) }}
-                />
-            </>
-        );
-    };
+    useEffect(()=>{
+        //Memory.SetUserInfo(null);
+    });
+
+    return (
+        <>
+            <TabView
+                navigationState={{index, routes}}
+                renderScene={renderScene}
+                onIndexChange={index=>setIndex(index)}
+            />
+        </>
+    );
 };
 
 export default Login_Register;
