@@ -1,11 +1,19 @@
-import React, {Component, useEffect, useState} from 'react';
+import React, {
+  Component,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {TextInput, Button, IconButton} from 'react-native-paper';
 import Loadding from 'react-native-loading-spinner-overlay';
 import {Picker} from '@react-native-picker/picker';
 import HttpClient from '../utils/HttpClient';
+import { useDispatch } from 'react-redux';
 
 // function layDuLieuTinhThanh(
+//   datatinhthanh,
 //   setDataTinhThanh,
 //   setDataQuanHuyen,
 //   setDataPhuongXa,
@@ -13,7 +21,6 @@ import HttpClient from '../utils/HttpClient';
 //   HttpClient.GetJson('dsTinhThanh', null).then(json => {
 //     if (json.isSuccess) {
 //       setDataTinhThanh(json.data.arr);
-//       layDuLieuQuanHuyen(setDataQuanHuyen, setDataPhuongXa, '');
 //     } else {
 //       alert(json.message);
 //     }
@@ -45,7 +52,7 @@ import HttpClient from '../utils/HttpClient';
 //   }
 // }
 
-function capNhatDuLieu(setLoadding, data) {
+function capNhatDuLieu(setLoadding, data, callback) {
   let o = {
     id: data.id,
     name: data.name,
@@ -72,9 +79,8 @@ function capNhatDuLieu(setLoadding, data) {
       .then(json => {
         setLoadding(false);
         if (json.isSuccess) {
-          alert(
-            'Cập nhật thông tin thành công, thoát ứng dụng vào lại để cập nhật thông tin',
-          );
+          alert('Cập nhật dữ liệu thành công');
+          callback && callback();
         } else {
           alert(json.message);
         }
@@ -97,31 +103,65 @@ function EditProfile({route}) {
   const [quanhuyenid, setQuanHuyenId] = useState('');
   const [phuongxaid, setPhuongXaId] = useState('');
   const [datatinhthanh, setDataTinhThanh] = useState([]);
+  useEffect(() => {
+    //callback
+    if (tinhthanhid && tinhthanhid.length > 0) setTinhThanhId(tinhthanhid);
+  }, [datatinhthanh]);
   const [dataquanhuyen, setDataQuanHuyen] = useState([]);
+  useEffect(() => {
+    //callback
+    if (quanhuyenid && quanhuyenid.length > 0) setQuanHuyenId(quanhuyenid);
+  }, [dataquanhuyen]);
   const [dataphuongxa, setDataPhuongXa] = useState([]);
+  useEffect(() => {
+    //callback
+    if (phuongxaid && phuongxaid.length > 0) setPhuongXaId(phuongxaid);
+  }, [dataphuongxa]);
 
   useEffect(() => {
-    //layDuLieuTinhThanh(setDataTinhThanh);
-    // this.setState({
-    //   id: o.ID,
-    //   name: o.NAME,
-    //   dienthoai: o.DIENTHOAI,
-    //   diachi: o.DIACHI,
-    //   email: o.EMAIL,
-    //   tinhthanhid: o.DTINHTHANHID ?? '',
-    //   quanhuyenid: o.DQUANHUYENID ?? '',
-    //   phuongxaid: o.DPHUONGXAID ?? '',
-    // });
+    let {params} = route;
+    setId(params.ID);
+    setName(params.NAME);
+    setDienThoai(params.DIENTHOAI);
+    setDiaChi(params.DIACHI);
+    setEmail(params.EMAIL);
+  }, [id, name, dienthoai, diachi, email]);
 
-    //Lấy dữ liệu địa điểm
-    HttpClient.GetJson('duLieuDiaDiem', null).then(json => {
+  useEffect(() => {
+    let {params} = route;
+    setTinhThanhId(params.DTINHTHANHID);
+    setQuanHuyenId(params.DQUANHUYENID);
+    setPhuongXaId(params.DPHUONGXAID);
+    HttpClient.GetJson('dsTinhThanh', null).then(json => {
       if (json.isSuccess) {
-        console.log(json.data);
+        setDataTinhThanh(json.data.arr);
       } else {
         alert(json.message);
       }
     });
-  });
+  }, []);
+
+  useEffect(() => {
+    HttpClient.GetJson('dsQuanHuyen', {ID: tinhthanhid}).then(json => {
+      if (json.isSuccess) {
+        setDataQuanHuyen(json.data.arr);
+      } else {
+        alert(json.message);
+      }
+    });
+  }, [tinhthanhid]);
+
+  useEffect(() => {
+    HttpClient.GetJson('dsPhuongXa', {ID: quanhuyenid}).then(json => {
+      if (json.isSuccess) {
+        setDataPhuongXa(json.data.arr);
+      } else {
+        alert(json.message);
+      }
+    });
+  }, [quanhuyenid]);
+
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -156,16 +196,7 @@ function EditProfile({route}) {
             selectedValue={tinhthanhid}
             onValueChange={(itemValue, itemIndex) => {
               if (itemValue != tinhthanhid) {
-                //setTinhThanhId(itemValue);
-                // setQuanHuyenId('');
-                // setPhuongXaId('');
-                // setDataQuanHuyen([]);
-                // setDataPhuongXa([]);
-                // layDuLieuQuanHuyen(
-                //   setDataQuanHuyen,
-                //   setDataPhuongXa,
-                //   itemValue,
-                // );
+                setTinhThanhId(itemValue);
               }
             }}>
             {datatinhthanh.map((val, i) => {
@@ -181,10 +212,7 @@ function EditProfile({route}) {
             selectedValue={quanhuyenid}
             onValueChange={(itemValue, itemIndex) => {
               if (itemValue != quanhuyenid) {
-                // setQuanHuyenId(itemValue);
-                // setDataPhuongXa([]);
-                // setPhuongXaId('');
-                // layDuLieuPhuongXa(setDataPhuongXa, itemValue);
+                setQuanHuyenId(itemValue);
               }
             }}>
             {dataquanhuyen.map((val, i) => {
@@ -199,8 +227,7 @@ function EditProfile({route}) {
             style={styles.combobox}
             selectedValue={phuongxaid}
             onValueChange={(itemValue, itemIndex) => {
-              //fill dữ liệu quận huyện
-              //setPhuongXaId(itemValue);
+              setPhuongXaId(itemValue);
             }}>
             {dataphuongxa.map((val, i) => {
               val.key = val.ID;
@@ -214,7 +241,7 @@ function EditProfile({route}) {
             label="Địa chỉ"
             placeholder="Nhập số nhà..."
             value={diachi}
-            onChangeText={text => this.setState({diachi: text})}
+            onChangeText={text => setDiaChi(text)}
           />
           <Button
             style={styles.btn}
@@ -229,6 +256,19 @@ function EditProfile({route}) {
                 quanhuyenid: quanhuyenid,
                 phuongxaid: phuongxaid,
                 diachi: diachi,
+              }, ()=>{
+                let {params} = route;
+                params.NAME = name;
+                params.DIENTHOAI = dienthoai;
+                params.EMAIL = email;
+                params.DTINHTHANHID = tinhthanhid;
+                params.DQUANHUYENID = quanhuyenid;
+                params.DPHUONGXAID = phuongxaid;
+                params.DIACHI = diachi;
+                dispatch({
+                  type: 'setUser',
+                  payload: params
+                });
               })
             }>
             <Text>Cập nhật</Text>
