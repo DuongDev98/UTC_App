@@ -1,83 +1,75 @@
 import React, {Component, useEffect, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Dimensions,
-  ScrollView,
-} from 'react-native';
+import {View, StyleSheet, Text, Dimensions, ScrollView} from 'react-native';
 import HttpClient from '../utils/HttpClient';
 import Slideshow from './items/Slideshow';
 import Contants from '../utils/Contants';
-import {Rating} from 'react-native-ratings';
+// import {Rating} from 'react-native-ratings';
 import {IconButton} from 'react-native-paper';
 import RenderHtml from 'react-native-render-html';
+import { useDispatch } from 'react-redux';
+import {IncreToCart} from '../reducers/actionCreator';
 
-function addToCart(item) {
+function addToCart(dispatch, item) {
   let o = {};
   o.DMATHANGID = item.ID;
   o.NAME = item.NAME;
   o.DONGIA = item.GIABAN;
   o.SOLUONG = 1;
   o.AVATAR = item.images[0];
-  alert("Đã thêm vào giỏ hàng");
+  dispatch(IncreToCart(o));
+  alert('Đã thêm vào giỏ hàng');
 }
 
 function MatHang({route}) {
-
+  const dispatch = useDispatch();
   const [item, setItem] = useState(null);
-  const [arr, setArr] = useState([]);
+  //const [arr, setArr] = useState([]);
 
- useEffect(()=>{
-  HttpClient.GetJson('thongTinMatHang', {
-    ID: route.params,
-  }).then(json=>{
-    if (json.isSuccess) {
-      let images = [];
-      json.data.DANHSANPHAMs.map((it, index) => {
-        images.push({url: Contants.ImgUri + it.LINK});
-      });
-      json.data.images = images;
-      setArr(json.data);
-    } else {
-      alert(json.message);
-    }
-  });
- });
- return item == null ? (
-  <Text>Sản phẩm không tồn tại trong hệ thống</Text>
-) : (
-  <>
-    <ScrollView>
-      <View style={styles.container}>
-        <Text style={styles.title}>{item.NAME}</Text>
-        <Slideshow
-          dataSource={item.images}
-          height={(height * 2) / 3}
-        />
-        <Rating type="heart" ratingCount={5} onFinishRating={() => {}} />
-        <Text style={[styles.number]}>
-          Giá bán: {item.GIABAN}
-        </Text>
-        <Text style={[styles.text]}>Mô tả</Text>
-        <View style={{padding: 10}}>
+  useEffect(() => {
+    HttpClient.GetJson('thongTinMatHang', {
+      ID: route.params,
+    }).then(json => {
+      if (json.isSuccess) {
+        let images = [];
+        json.data.DANHSANPHAMs.map((it, index) => {
+          images.push({url: Contants.ImgUri + it.LINK});
+        });
+        json.data.images = images;
+        setItem(json.data);
+      } else {
+        alert(json.message);
+      }
+    });
+  }, []);
+  return item == null ? (
+    <Text>Sản phẩm không tồn tại trong hệ thống</Text>
+  ) : (
+    <>
+      <ScrollView>
+        <View style={styles.container}>
+          <Text style={styles.title}>{item.NAME}</Text>
+          <Slideshow dataSource={item.images} height={(height * 2) / 3} />
+          {/* <Rating type="heart" ratingCount={5} onFinishRating={() => {}} /> */}
+          <Text style={[styles.number]}>Giá bán: {item.GIABAN}</Text>
+          <Text style={[styles.text]}>Mô tả</Text>
+          <View style={{padding: 10}}>
             <RenderHtml
-                source={{
-                    html: item.MOTA,
-                }}
-                contentWidth={width}
+              source={{
+                html: item.MOTA,
+              }}
+              contentWidth={width}
             />
+          </View>
         </View>
-      </View>
-    </ScrollView>
-    <IconButton
-      color="white"
-      icon={'cart'}
-      style={styles.btnThem}
-      onPress={() => addToCart(item)}
-    />
-  </>
-);
+      </ScrollView>
+      <IconButton
+        color="white"
+        icon={'cart'}
+        style={styles.btnThem}
+        onPress={() => addToCart(dispatch, item)}
+      />
+    </>
+  );
 }
 
 let width = Dimensions.get('window').width;
@@ -87,7 +79,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 5,
     backgroundColor: 'white',
-    paddingBottom: 60
+    paddingBottom: 60,
   },
   title: {
     marginBottom: 10,

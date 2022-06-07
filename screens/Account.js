@@ -1,11 +1,11 @@
-import React, {Component, useState} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {Avatar, Button, IconButton, Badge} from 'react-native-paper';
 import Contants from '../utils/Contants';
 import HttpClient from '../utils/HttpClient';
-import Memory from '../utils/Memory';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import { useDispatch, useSelector } from 'react-redux';
+import { UploadAvatar } from '../reducers/actionCreator';
 
 function editProfile(navigation, user) {
   navigation.navigate('EditProfileSc', user);
@@ -25,10 +25,7 @@ async function uploadAvatar(dispatch) {
     img.khachhangid = user.ID;
     HttpClient.GetJson('uploadavatar', img).then(json=>{
       if (json.isSuccess) {
-        dispatch({
-          type: 'uploadavatar',
-          payload: json.data.img
-        });
+        dispatch(UploadAvatar(json.data.img));
       } else {
         alert(json.message);
       }

@@ -2,8 +2,8 @@ import {View, StyleSheet} from 'react-native';
 import React, {Component, useState} from 'react';
 import {Button, TextInput, HelperText, DataTable} from 'react-native-paper';
 import HttpClient from '../utils/HttpClient';
-import Memory from '../utils/Memory';
 import {useDispatch} from 'react-redux';
+import {SetUser} from '../reducers/actionCreator';
 
 function btnLogin_Click(
   dispatch,
@@ -34,10 +34,7 @@ function btnLogin_Click(
   HttpClient.GetJson('login', param).then(data => {
     setLoginLoadding(false);
     if (data.isSuccess) {
-      dispatch({
-        type: 'setUser',
-        payload: data.data,
-      });
+      dispatch(SetUser(data.data));
       navigation.navigate('MainSc');
     } else {
       alert(data.message);

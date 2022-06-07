@@ -11,6 +11,7 @@ import Loadding from 'react-native-loading-spinner-overlay';
 import {Picker} from '@react-native-picker/picker';
 import HttpClient from '../utils/HttpClient';
 import { useDispatch } from 'react-redux';
+import {SetUser} from '../reducers/actionCreator';
 
 // function layDuLieuTinhThanh(
 //   datatinhthanh,
@@ -118,6 +119,15 @@ function EditProfile({route}) {
     if (phuongxaid && phuongxaid.length > 0) setPhuongXaId(phuongxaid);
   }, [dataphuongxa]);
 
+  // useEffect(() => {
+  //   let {params} = route;
+  //   setId(params.ID);
+  //   setName(params.NAME);
+  //   setDienThoai(params.DIENTHOAI);
+  //   setDiaChi(params.DIACHI);
+  //   setEmail(params.EMAIL);
+  // }, [id, name, dienthoai, diachi, email]);
+
   useEffect(() => {
     let {params} = route;
     setId(params.ID);
@@ -125,10 +135,6 @@ function EditProfile({route}) {
     setDienThoai(params.DIENTHOAI);
     setDiaChi(params.DIACHI);
     setEmail(params.EMAIL);
-  }, [id, name, dienthoai, diachi, email]);
-
-  useEffect(() => {
-    let {params} = route;
     setTinhThanhId(params.DTINHTHANHID);
     setQuanHuyenId(params.DQUANHUYENID);
     setPhuongXaId(params.DPHUONGXAID);
@@ -265,10 +271,7 @@ function EditProfile({route}) {
                 params.DQUANHUYENID = quanhuyenid;
                 params.DPHUONGXAID = phuongxaid;
                 params.DIACHI = diachi;
-                dispatch({
-                  type: 'setUser',
-                  payload: params
-                });
+                dispatch(SetUser(params));
               })
             }>
             <Text>Cập nhật</Text>

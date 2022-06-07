@@ -2,6 +2,7 @@ import React, {Component, useState} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {IconButton} from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
 function tangSl(item) {
   // let arr = this.state.arr;
@@ -61,7 +62,7 @@ function itemList(item) {
           }}>
           <TouchableOpacity
             style={styles.btn}
-            onPress={() => this.giamSl(item)}>
+            onPress={() => giamSl(item)}>
             <MaterialCommunityIcons name="numeric-negative-1" size={35} />
           </TouchableOpacity>
           <Text style={[styles.title, {padding: 10, fontSize: 25}]}>
@@ -69,12 +70,12 @@ function itemList(item) {
           </Text>
           <TouchableOpacity
             style={styles.btn}
-            onPress={() => this.tangSl(item)}>
+            onPress={() => tangSl(item)}>
             <MaterialCommunityIcons name="numeric-positive-1" size={35} />
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.btn, {backgroundColor: 'red'}]}
-            onPress={() => this.xoaMatHang(item)}>
+            onPress={() => xoaMatHang(item)}>
             <MaterialCommunityIcons color={'white'} name="trash-can-outline" size={35} />
           </TouchableOpacity>
         </View>
@@ -88,14 +89,14 @@ function thanhToan() {
   //navigation.navigate('ThanhToanSc');
 }
 
-function Cart() {
-const [arr, setArr] = useState([]);
+function Cart(props) {
+  let cartInfo = useSelector(state=>state.cartInfo);
   return (
     <View style={styles.container}>
-      {arr.length == 0 ? (
+      {cartInfo.data.length == 0 ? (
         <Text>Danh sách giỏ hàng trống</Text>
       ) : (
-        arr.map((item, index) => itemList(item))
+        cartInfo.data.map((item, index) => itemList(item))
       )}
       <IconButton
         color="white"

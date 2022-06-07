@@ -1,3 +1,5 @@
+import { SETUSER, UPLOADAVATAR, REMOVEUSER } from './typeaction';
+
 const initUserSate = {
   ID: '',
   AVATAR: '',
@@ -18,21 +20,8 @@ const initUserSate = {
   TDONHANGs: [],
 };
 
-// export const setUser = o => {
-//   return {
-//     type: 'setUser',
-//     payload: o,
-//   };
-// };
-
-// export const removeUser = o => {
-//   return {
-//     type: 'removeUser',
-//   };
-// };
-
 const userReducer = (state = initUserSate, action) => {
-  if (action.type == 'setUser') {
+  if (action.type == SETUSER) {
     return {
       ...state,
       ID: action.payload.ID,
@@ -54,13 +43,13 @@ const userReducer = (state = initUserSate, action) => {
       TDONHANGs: action.payload.TDONHANGs,
     };
   }
-  if (action.type == 'uploadavatar') {
+  if (action.type == UPLOADAVATAR) {
     return {
       ...state,
       AVATAR: action.payload,
     };
   }
-  if (action.type == 'removeUser') {
+  if (action.type == REMOVEUSER) {
     return initUserSate;
   }
   return state;
