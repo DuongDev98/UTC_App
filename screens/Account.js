@@ -1,5 +1,5 @@
 import React, {Component, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, BackHandler} from 'react-native';
 import {Avatar, Button, IconButton, Badge} from 'react-native-paper';
 import Contants from '../utils/Contants';
 import HttpClient from '../utils/HttpClient';
@@ -7,8 +7,8 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadAvatar } from '../reducers/actionCreator';
 
-function editProfile(navigation, user) {
-  navigation.navigate('EditProfileSc', user);
+function editProfile(navigation) {
+  navigation.navigate('EditProfileSc');
 }
 
 function danhSachDonHang(trangthai) {
@@ -36,6 +36,14 @@ async function uploadAvatar(dispatch) {
 function Account ({navigation}) {
   let user = useSelector(state=>state.userInfo);
   let dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   BackHandler.addEventListener("callbackSetUser", backAction);
+
+  //   return () =>
+  //     BackHandler.removeEventListener("callbackSetUser", backAction);
+  // }, []);
+
   return (
     <>
       {user == null ? null : (
@@ -54,7 +62,7 @@ function Account ({navigation}) {
               style={styles.iconEditProfile}
               icon={'account-edit'}
               size={30}
-              onPress={() => editProfile(navigation, user)}
+              onPress={() => editProfile(navigation)}
             />
           </View>
           <View style={{flexDirection: 'row', padding: 10}}>

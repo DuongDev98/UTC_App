@@ -10,7 +10,7 @@ import {TextInput, Button, IconButton} from 'react-native-paper';
 import Loadding from 'react-native-loading-spinner-overlay';
 import {Picker} from '@react-native-picker/picker';
 import HttpClient from '../utils/HttpClient';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {SetUser} from '../reducers/actionCreator';
 
 // function layDuLieuTinhThanh(
@@ -93,7 +93,8 @@ function capNhatDuLieu(setLoadding, data, callback) {
   }
 }
 
-function EditProfile({route}) {
+function EditProfile() {
+  const userInfo = useSelector(state=>state.userInfo);
   const [loadding, setLoadding] = useState(false);
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -119,25 +120,15 @@ function EditProfile({route}) {
     if (phuongxaid && phuongxaid.length > 0) setPhuongXaId(phuongxaid);
   }, [dataphuongxa]);
 
-  // useEffect(() => {
-  //   let {params} = route;
-  //   setId(params.ID);
-  //   setName(params.NAME);
-  //   setDienThoai(params.DIENTHOAI);
-  //   setDiaChi(params.DIACHI);
-  //   setEmail(params.EMAIL);
-  // }, [id, name, dienthoai, diachi, email]);
-
   useEffect(() => {
-    let {params} = route;
-    setId(params.ID);
-    setName(params.NAME);
-    setDienThoai(params.DIENTHOAI);
-    setDiaChi(params.DIACHI);
-    setEmail(params.EMAIL);
-    setTinhThanhId(params.DTINHTHANHID);
-    setQuanHuyenId(params.DQUANHUYENID);
-    setPhuongXaId(params.DPHUONGXAID);
+    setId(userInfo.ID);
+    setName(userInfo.NAME);
+    setDienThoai(userInfo.DIENTHOAI);
+    setDiaChi(userInfo.DIACHI);
+    setEmail(userInfo.EMAIL);
+    setTinhThanhId(userInfo.DTINHTHANHID);
+    setQuanHuyenId(userInfo.DQUANHUYENID);
+    setPhuongXaId(userInfo.DPHUONGXAID);
     HttpClient.GetJson('dsTinhThanh', null).then(json => {
       if (json.isSuccess) {
         setDataTinhThanh(json.data.arr);
@@ -263,7 +254,7 @@ function EditProfile({route}) {
                 phuongxaid: phuongxaid,
                 diachi: diachi,
               }, ()=>{
-                let {params} = route;
+                let params = {};
                 params.NAME = name;
                 params.DIENTHOAI = dienthoai;
                 params.EMAIL = email;

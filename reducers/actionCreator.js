@@ -1,4 +1,5 @@
 import {
+  CLEARTOCART,
   DECRETOCART,
   INCRETOCART,
   REMOVETOCART,
@@ -25,6 +26,12 @@ export const RemoveToCart = DMATHANGID => {
   return {
     type: REMOVETOCART,
     payload: DMATHANGID,
+  };
+};
+
+export const ClearToCart = () => {
+  return {
+    type: CLEARTOCART,
   };
 };
 

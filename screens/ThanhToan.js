@@ -1,214 +1,183 @@
-import React, {Component} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import Memory from '../utils/Memory';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {TextInput, Button, IconButton} from 'react-native-paper';
 import {Picker} from '@react-native-picker/picker';
 import HttpClient from '../utils/HttpClient';
+import { useDispatch, useSelector } from 'react-redux';
+import { ClearToCart } from '../reducers/actionCreator';
 
-// import { LogBox } from 'react-native';
-// LogBox.ignoreLogs([
-//   'Non-serializable values were found in the navigation state',
-// ]);
-
-class ThanhToan extends Component {
-  constructor() {
-    super();
-    this.state = {
-      loadding: false,
-      id: '',
-      name: '',
-      dienthoai: '',
-      diachi: '',
-      tinhthanhid: '',
-      quanhuyenid: '',
-      phuongxaid: '',
-      ghichu: '',
-      datatinhthanh: [],
-      dataquanhuyen: [],
-      dataphuongxa: [],
-    };
-  }
-
-  layDuLieuTinhThanh() {
-    HttpClient.GetJson('dsTinhThanh', null).then(json => {
+function thucHienThanhToan(dispatch, {id, name, dienthoai, diachi, ghichu, tinhthanhid, quanhuyenid, phuongxaid}, dsChiTiet) {
+    //chuẩn bị dữ liệu
+    let donHang = {};
+    donHang.DKHACHHANGID = id;
+    donHang.TENNGUOINHAN = name;
+    donHang.DIENTHOAI = dienthoai;
+    donHang.DIACHI = diachi;
+    donHang.GHICHU = ghichu;
+    donHang.DTINHTHANHID = tinhthanhid;
+    donHang.DQUANHUYENID = quanhuyenid;
+    donHang.DPHUONGXAID = phuongxaid;
+    donHang.TDONHANGCHITIETs = dsChiTiet;
+    HttpClient.GetJson('thucHienThanhToan', donHang).then(json=>{
       if (json.isSuccess) {
-        let o = json.data.arr;
-        this.setState({datatinhthanh: o}, () => {
-          this.layDuLieuQuanHuyen();
-        });
+        alert("Đặt hàng thành công");
+        dispatch(ClearToCart());
       } else {
         alert(json.message);
       }
     });
   }
 
-  layDuLieuQuanHuyen() {
-    if (this.state.tinhthanhid.length > 0) {
-      HttpClient.GetJson('dsQuanHuyen', {ID: this.state.tinhthanhid}).then(
-        json => {
-          if (json.isSuccess) {
-            let o = json.data.arr;
-            this.setState({dataquanhuyen: o}, () => {
-              this.layDuLieuPhuongXa();
-            });
-          } else {
-            alert(json.message);
-          }
-        },
-      );
-    }
-  }
+function ThanhToan({navigation}) {
+  const dispatch = useDispatch();
+  const userInfo = useSelector(state=>state.userInfo);
+  const cartInfo = useSelector(state=>state.cartInfo);
+  //const [loadding, setLoadding] = useState(false);
+  const [id, setId] = useState('');
+  const [name, setName] = useState('');
+  const [dienthoai, setDienThoai] = useState('');
+  //const [email, setEmail] = useState('');
+  const [diachi, setDiaChi] = useState('');
+  const [ghichu, setGhiChu] = useState('');
+  const [tinhthanhid, setTinhThanhId] = useState('');
+  const [quanhuyenid, setQuanHuyenId] = useState('');
+  const [phuongxaid, setPhuongXaId] = useState('');
+  const [datatinhthanh, setDataTinhThanh] = useState([]);
+  useEffect(() => {
+    //callback
+    if (tinhthanhid && tinhthanhid.length > 0) setTinhThanhId(tinhthanhid);
+  }, [datatinhthanh]);
+  const [dataquanhuyen, setDataQuanHuyen] = useState([]);
+  useEffect(() => {
+    //callback
+    if (quanhuyenid && quanhuyenid.length > 0) setQuanHuyenId(quanhuyenid);
+  }, [dataquanhuyen]);
+  const [dataphuongxa, setDataPhuongXa] = useState([]);
+  useEffect(() => {
+    //callback
+    if (phuongxaid && phuongxaid.length > 0) setPhuongXaId(phuongxaid);
+  }, [dataphuongxa]);
 
-  layDuLieuPhuongXa() {
-    if (this.state.quanhuyenid.length > 0) {
-      HttpClient.GetJson('dsPhuongXa', {ID: this.state.quanhuyenid}).then(
-        json => {
-          if (json.isSuccess) {
-            let o = json.data.arr;
-            this.setState({dataphuongxa: o});
-          } else {
-            alert(json.message);
-          }
-        },
-      );
-    }
-  }
-
-  async thucHienThanhToan() {
-    //chuẩn bị dữ liệu
-    let donHang = {};
-    let dsChiTiet = await Memory.GetCartItem();
-    donHang.DKHACHHANGID = this.state.id;
-    donHang.TENNGUOINHAN = this.state.name;
-    donHang.DIENTHOAI = this.state.dienthoai;
-    donHang.DIACHI = this.state.diachi;
-    donHang.GHICHU = this.state.ghichu;
-    donHang.DTINHTHANHID = this.state.tinhthanhid;
-    donHang.DQUANHUYENID = this.state.quanhuyenid;
-    donHang.DPHUONGXAID = this.state.phuongxaid;
-    donHang.TDONHANGCHITIETs = dsChiTiet;
-    let json = await HttpClient.GetJson('thucHienThanhToan', donHang);
-    if (json.isSuccess) {
-      //await Memory.SetCartItem(null);      
-      //this.props.route.params.onClearCart();
-      this.props.navigation.goBack();
-    } else {
-      alert(json.message);
-    }
-  }
-
-  async componentDidMount() {
-    this.layDuLieuTinhThanh();
-    let o = await Memory.GetUserInfo();
-    this.setState({
-      id: o.ID,
-      name: o.NAME,
-      dienthoai: o.DIENTHOAI,
-      diachi: o.DIACHI,
-      tinhthanhid: o.DTINHTHANHID ?? '',
-      quanhuyenid: o.DQUANHUYENID ?? '',
-      phuongxaid: o.DPHUONGXAID ?? '',
+  useEffect(() => {
+    setId(userInfo.ID);
+    setName(userInfo.NAME);
+    setDienThoai(userInfo.DIENTHOAI);
+    setDiaChi(userInfo.DIACHI);
+    //setEmail(userInfo.EMAIL);
+    setTinhThanhId(userInfo.DTINHTHANHID);
+    setQuanHuyenId(userInfo.DQUANHUYENID);
+    setPhuongXaId(userInfo.DPHUONGXAID);
+    HttpClient.GetJson('dsTinhThanh', null).then(json => {
+      if (json.isSuccess) {
+        setDataTinhThanh(json.data.arr);
+      } else {
+        alert(json.message);
+      }
     });
-  }
+  }, []);
 
-  render() {
-    let {datatinhthanh, dataquanhuyen, dataphuongxa} = this.state;
-    return (
-      <View style={styles.container}>
-        <TextInput
-          style={styles.textInput}
-          label="Họ và tên người nhận"
-          placeholder="Nhập họ và tên"
-          value={this.state.name}
-          onChangeText={text => this.setState({name: text})}
-        />
-        <TextInput
-          style={styles.textInput}
-          label="Điện thoại người nhận"
-          placeholder="Nhập số điện thoại"
-          value={this.state.dienthoai}
-          onChangeText={text => this.setState({dienthoai: text})}
-        />
-        {/* Tỉnh thành */}
-        <Picker
-          style={styles.combobox}
-          selectedValue={this.state.tinhthanhid}
-          onValueChange={(itemValue, itemIndex) => {
-            if (itemValue != this.state.tinhthanhid) {
-              this.setState(
-                {
-                  tinhthanhid: itemValue,
-                  quanhuyenid: '',
-                  phuongxaid: '',
-                  dataquanhuyen: [],
-                  dataphuongxa: [],
-                },
-                () => {
-                  this.layDuLieuQuanHuyen();
-                },
-              );
-            }
-          }}>
-          {datatinhthanh.map((val, i) => {
-            return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
-          })}
-        </Picker>
+  useEffect(() => {
+    HttpClient.GetJson('dsQuanHuyen', {ID: tinhthanhid}).then(json => {
+      if (json.isSuccess) {
+        setDataQuanHuyen(json.data.arr);
+      } else {
+        alert(json.message);
+      }
+    });
+  }, [tinhthanhid]);
 
-        {/* Quận huyện */}
-        <Picker
-          style={styles.combobox}
-          selectedValue={this.state.quanhuyenid}
-          onValueChange={(itemValue, itemIndex) => {
-            if (itemValue != this.state.quanhuyenid) {
-              this.setState(
-                {quanhuyenid: itemValue, dataphuongxa: [], phuongxaid: ''},
-                () => {
-                  this.layDuLieuPhuongXa();
-                },
-              );
-            }
-          }}>
-          {dataquanhuyen.map((val, i) => {
-            return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
-          })}
-        </Picker>
+  useEffect(() => {
+    HttpClient.GetJson('dsPhuongXa', {ID: quanhuyenid}).then(json => {
+      if (json.isSuccess) {
+        setDataPhuongXa(json.data.arr);
+      } else {
+        alert(json.message);
+      }
+    });
+  }, [quanhuyenid]);
 
-        {/* Phường xã */}
-        <Picker
-          style={styles.combobox}
-          selectedValue={this.state.phuongxaid}
-          onValueChange={(itemValue, itemIndex) => {
-            //fill dữ liệu quận huyện
-            this.setState({phuongxaid: itemValue});
-          }}>
-          {dataphuongxa.map((val, i) => {
-            val.key = val.ID;
-            return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
-          })}
-        </Picker>
-        <TextInput
-          style={styles.textInput}
-          label="Địa chỉ người nhận"
-          placeholder="Nhập số nhà..."
-          value={this.state.diachi}
-          onChangeText={text => this.setState({diachi: text})}
-        />
-        <TextInput
-          style={styles.textInput}
-          label="Ghi chú"
-          placeholder="Nhập ghi chú..."
-          value={this.state.ghichu}
-          onChangeText={text => this.setState({ghichu: text})}
-        />
-        <Button
-          style={styles.btn}
-          mode="contained"
-          onPress={() => this.thucHienThanhToan()}>
-          <Text>Thanh toán</Text>
-        </Button>
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.textInput}
+        label="Họ và tên người nhận"
+        placeholder="Nhập họ và tên"
+        value={name}
+        onChangeText={text => setName(text)}
+      />
+      <TextInput
+        style={styles.textInput}
+        label="Điện thoại người nhận"
+        placeholder="Nhập số điện thoại"
+        value={dienthoai}
+        onChangeText={text => setDienThoai(text)}
+      />
+      {/* Tỉnh thành */}
+      <Picker
+        style={styles.combobox}
+        selectedValue={tinhthanhid}
+        onValueChange={(itemValue, itemIndex) => {
+          if (itemValue != tinhthanhid) {
+            setTinhThanhId(itemValue);
+          }
+        }}>
+        {datatinhthanh.map((val, i) => {
+          return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
+        })}
+      </Picker>
+
+      {/* Quận huyện */}
+      <Picker
+        style={styles.combobox}
+        selectedValue={quanhuyenid}
+        onValueChange={(itemValue, itemIndex) => {
+          if (itemValue != quanhuyenid) {
+            setQuanHuyenId(itemValue);
+          }
+        }}>
+        {dataquanhuyen.map((val, i) => {
+          return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
+        })}
+      </Picker>
+
+      {/* Phường xã */}
+      <Picker
+        style={styles.combobox}
+        selectedValue={phuongxaid}
+        onValueChange={(itemValue, itemIndex) => {
+          setPhuongXaId(itemValue);
+        }}>
+        {dataphuongxa.map((val, i) => {
+          val.key = val.ID;
+          return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
+        })}
+      </Picker>
+      <TextInput
+        style={styles.textInput}
+        label="Địa chỉ người nhận"
+        placeholder="Nhập số nhà..."
+        value={diachi}
+        onChangeText={text => setDiaChi(text)}
+      />
+      <TextInput
+        style={styles.textInput}
+        label="Ghi chú"
+        placeholder="Nhập ghi chú..."
+        value={ghichu}
+        onChangeText={text => setGhiChu(text)}
+      />
+      <Button
+        style={styles.btn}
+        mode="contained"
+        onPress={() => {
+          let params = {id, name, dienthoai, diachi, ghichu, tinhthanhid, quanhuyenid, phuongxaid};
+          thucHienThanhToan(dispatch, params, cartInfo.data);
+        }}>
+        <Text>Thanh toán</Text>
+      </Button>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

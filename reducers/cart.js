@@ -1,4 +1,4 @@
-import { INCRETOCART, DECRETOCART, REMOVETOCART } from './typeaction';
+import { INCRETOCART, DECRETOCART, REMOVETOCART, CLEARTOCART } from './typeaction';
 
 const initCartSate = {
   data: []
@@ -18,38 +18,26 @@ const cartReducer = (state = initCartSate, action) => {
   }
 
   if (action.type == DECRETOCART) {
-    let data = state.data;
-    let remove = -1;
-    data.forEach((element, index) => {
-      if (element.DMATHANGID == action.payload.DMATHANGID) {
-        element.SOLUONG -= 1;
-        if (element.SOLUONG <= 0) {
-          remove = index;
-        }
-      }
-    });
-    if (remove >= 0) {
-      data.splice(remove, 1);
+    if (state.data.filter(item=>(item.DMATHANGID == action.payload && item.SOLUONG == 1)).length > 0)
+    {
+      return {
+        ...state,data:[...state.data.filter(item=>item.DMATHANGID != action.payload)]
+      };
     }
     return {
-      ...state, data: [...data]
-    };
+      ...state,data:[...state.data.map(item=>item.DMATHANGID==action.payload? {...item,SOLUONG:item.SOLUONG-1}:item)]
+    }
   }
 
   if (action.type == REMOVETOCART) {
-    let data = state.data;
-    let remove = -1;
-    data.forEach((element, index) => {
-      if (element.DMATHANGID == action.payload.DMATHANGID) {
-        remove = index;
-      }
-    });
-    if (remove >= 0) {
-      data.splice(remove, 1);
-    }
-
     return {
-      ...state, data: [...data]
+      ...state, data: [...state.data.filter(item=>item.DMATHANGID != action.payload)]
+    };
+  }
+
+  if (action.type == CLEARTOCART) {
+    return {
+      ...state, data: []
     };
   }
   
