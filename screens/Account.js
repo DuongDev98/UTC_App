@@ -11,8 +11,16 @@ function editProfile(navigation) {
   navigation.navigate('EditProfileSc');
 }
 
-function danhSachDonHang(trangthai) {
-  alert('danh sach don hang');
+function danhSachDonHang(navigation, userInfo, trangthai) {
+  //0 chờ xử lý
+  //2 đang giao hàng
+  HttpClient.GetJson('danhSachDonHang', { DKHACHHANGID: userInfo.ID, TRANGTHAI: (trangthai == -1 ? '' : trangthai )}).then(json=>{
+    if (json.isSuccess) {
+      navigation.navigate("DanhSachDonHangSc", {data: json.data.arr});
+    } else {
+      alert(json.message);
+    }
+  });
 }
 
 async function uploadAvatar(dispatch) {
@@ -36,13 +44,27 @@ async function uploadAvatar(dispatch) {
 function Account ({navigation}) {
   let user = useSelector(state=>state.userInfo);
   let dispatch = useDispatch();
+  let [slChoXyLy, setSlChoXyLy] = useState(0);
+  let [slDangGiao, setSlDangGiao] = useState(0);
 
-  // useEffect(() => {
-  //   BackHandler.addEventListener("callbackSetUser", backAction);
+  useEffect(()=>{
+    let isMounted = true;
+    HttpClient.GetJson('soLuongDon', {ID: user.ID}).then(json=>{
+      if (json.isSuccess) {
+        if (isMounted)
+        {
+          setSlChoXyLy(json.data.slChoXyLy);
+          setSlDangGiao(json.data.slDangGiao);
+        }
+      } else {
+        alert(json.message);
+      }
+    });
 
-  //   return () =>
-  //     BackHandler.removeEventListener("callbackSetUser", backAction);
-  // }, []);
+    return () => {
+      isMounted = false;
+    };
+  });
 
   return (
     <>
@@ -71,50 +93,26 @@ function Account ({navigation}) {
             </Text>
             <TouchableOpacity
               style={{marginLeft: 'auto'}}
-              onPress={() => danhSachDonHang('')}>
+              onPress={() => danhSachDonHang(navigation, user, -1)}>
               <Text style={{color: 'blue'}}>Xem tất cả đơn hàng</Text>
             </TouchableOpacity>
           </View>
           <View
             style={[{flexDirection: 'column', padding: 10}, {paddingTop: 0}]}>
             <TouchableOpacity
-              onPress={() => danhSachDonHang('')}
+              onPress={() => danhSachDonHang(navigation, user, 0)}
               style={styles.containerBtn}>
               <View style={styles.iconBtn}>
-                <Badge style={{position: 'absolute'}}>3</Badge>
+                <Badge size={25} style={{position: 'absolute'}}>{slChoXyLy}</Badge>
                 <Text style={{fontSize: 16}}>Chở xử lý</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => danhSachDonHang('')}
+              onPress={() => danhSachDonHang(navigation, user, 2)}
               style={styles.containerBtn}>
               <View style={styles.iconBtn}>
-                <Badge style={{position: 'absolute'}}>3</Badge>
-                <Text style={{fontSize: 16}}>Đã xác nhận</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => danhSachDonHang('')}
-              style={styles.containerBtn}>
-              <View style={styles.iconBtn}>
-                <Badge style={{position: 'absolute'}}>3</Badge>
-                <Text style={{fontSize: 16}}>Chờ giao hàng</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => danhSachDonHang('')}
-              style={styles.containerBtn}>
-              <View style={styles.iconBtn}>
-                <Badge style={{position: 'absolute'}}>3</Badge>
-                <Text style={{fontSize: 16}}>Đơn hoàn thành</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => danhSachDonHang('')}
-              style={styles.containerBtn}>
-              <View style={styles.iconBtn}>
-                <Badge style={{position: 'absolute'}}>3</Badge>
-                <Text style={{fontSize: 16}}>Đơn đã hủy</Text>
+                <Badge size={25}style={{position: 'absolute'}}>{slDangGiao}</Badge>
+                <Text style={{fontSize: 16}}>Đang giao hàng</Text>
               </View>
             </TouchableOpacity>
           </View>
