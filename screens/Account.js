@@ -5,7 +5,7 @@ import Contants from '../utils/Contants';
 import HttpClient from '../utils/HttpClient';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import { useDispatch, useSelector } from 'react-redux';
-import { UploadAvatar } from '../reducers/actionCreator';
+import { SetUser, UploadAvatar } from '../reducers/actionCreator';
 
 function editProfile(navigation) {
   navigation.navigate('EditProfileSc');
@@ -23,7 +23,7 @@ function danhSachDonHang(navigation, userInfo, trangthai) {
   });
 }
 
-async function uploadAvatar(dispatch) {
+async function uploadAvatar(user, dispatch) {
   let img = await launchImageLibrary({
     mediaType: 'photo',
     includeBase64: true,
@@ -64,14 +64,14 @@ function Account ({navigation}) {
     return () => {
       isMounted = false;
     };
-  });
+  }, []);
 
   return (
     <>
       {user == null ? null : (
         <View style={styles.container}>
           <View style={styles.rowuser}>
-            <TouchableOpacity onPress={() => uploadAvatar(dispatch)}>
+            <TouchableOpacity onPress={() => uploadAvatar(user, dispatch)}>
               <Avatar.Image
                 size={64}
                 source={{uri: Contants.ImgUri + user.AVATAR}}
@@ -114,6 +114,15 @@ function Account ({navigation}) {
                 <Badge size={25}style={{position: 'absolute'}}>{slDangGiao}</Badge>
                 <Text style={{fontSize: 16}}>Đang giao hàng</Text>
               </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                dispatch(SetUser(null));
+                navigation.navigate("Login_Register_Sc");
+              }}
+              style={[styles.containerBtn, {backgroundColor: '#ff9354'}]}>
+              <Text style={{fontSize: 16, textAlign: 'right'}}>Đăng xuất</Text>
             </TouchableOpacity>
           </View>
         </View>

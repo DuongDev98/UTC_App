@@ -291,6 +291,9 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    //fb sdk
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 }
 
 if (isNewArchitectureEnabled()) {

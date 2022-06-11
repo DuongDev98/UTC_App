@@ -54,13 +54,15 @@ function itemList(dispatch, item) {
   );
 }
 
-function thanhToan(navigation, cartInfo) {
+function thanhToan(navigation, cartInfo, userInfo) {
   if (cartInfo.data.length == 0) alert("Dữ liệu đặt hàng trống");
+  else if ((userInfo.EMAIL??"").length == 0) alert("Bạn cần cập nhật Email trước");
   else navigation.navigate('ThanhToanSc');
 }
 
 function Cart({navigation}) {
   let cartInfo = useSelector(state=>state.cartInfo);
+  let userInfo = useSelector(state=>state.userInfo);
   const dispatch = useDispatch();
   return (
     <View style={styles.container}>
@@ -73,7 +75,7 @@ function Cart({navigation}) {
         color="white"
         icon={'cash-fast'}
         style={styles.btnThanhToan}
-        onPress={() => thanhToan(navigation, cartInfo)}
+        onPress={() => thanhToan(navigation, cartInfo, userInfo)}
       />
     </View>
   );

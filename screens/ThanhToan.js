@@ -1,38 +1,65 @@
 import React, {Component, useEffect, useState} from 'react';
 import Memory from '../utils/Memory';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {TextInput, Button, IconButton} from 'react-native-paper';
+import {TextInput, Button, IconButton, RadioButton} from 'react-native-paper';
 import {Picker} from '@react-native-picker/picker';
 import HttpClient from '../utils/HttpClient';
-import { useDispatch, useSelector } from 'react-redux';
-import { ClearToCart } from '../reducers/actionCreator';
+import {useDispatch, useSelector} from 'react-redux';
+import {ClearToCart} from '../reducers/actionCreator';
 
-function thucHienThanhToan(dispatch, {id, name, dienthoai, diachi, ghichu, tinhthanhid, quanhuyenid, phuongxaid}, dsChiTiet) {
-    //chuẩn bị dữ liệu
-    let donHang = {};
-    donHang.DKHACHHANGID = id;
-    donHang.TENNGUOINHAN = name;
-    donHang.DIENTHOAI = dienthoai;
-    donHang.DIACHI = diachi;
-    donHang.GHICHU = ghichu;
-    donHang.DTINHTHANHID = tinhthanhid;
-    donHang.DQUANHUYENID = quanhuyenid;
-    donHang.DPHUONGXAID = phuongxaid;
-    donHang.TDONHANGCHITIETs = dsChiTiet;
-    HttpClient.GetJson('thucHienThanhToan', donHang).then(json=>{
+function thucHienThanhToan(
+  dispatch,
+  {
+    id,
+    name,
+    dienthoai,
+    diachi,
+    ghichu,
+    tinhthanhid,
+    quanhuyenid,
+    phuongxaid,
+    cod,
+  },
+  dsChiTiet,
+) {
+  //chuẩn bị dữ liệu
+  let donHang = {};
+  donHang.DKHACHHANGID = id;
+  donHang.TENNGUOINHAN = name;
+  donHang.DIENTHOAI = dienthoai;
+  donHang.DIACHI = diachi;
+  donHang.GHICHU = ghichu;
+  donHang.DTINHTHANHID = tinhthanhid;
+  donHang.DQUANHUYENID = quanhuyenid;
+  donHang.DPHUONGXAID = phuongxaid;
+  donHang.COD = cod ? 30 : 0;
+  donHang.TDONHANGCHITIETs = dsChiTiet;
+  HttpClient.GetJson('thucHienThanhToan', donHang).then(json => {
+    if (json.isSuccess) {
+      alert('Đặt hàng thành công');
+      dispatch(ClearToCart());
+    } else {
+      alert(json.message);
+    }
+  });
+}
+
+function GuiEmail(code, email) {
+  HttpClient.GetJson('guiEmailXacNhan', {CODE: code, EMAIL: email}).then(
+    json => {
       if (json.isSuccess) {
-        alert("Đặt hàng thành công");
-        dispatch(ClearToCart());
+        alert('Vui lòng kiểm tra email: ' + email + ' để lấy mã xác nhận');
       } else {
         alert(json.message);
       }
-    });
-  }
+    },
+  );
+}
 
 function ThanhToan({navigation}) {
   const dispatch = useDispatch();
-  const userInfo = useSelector(state=>state.userInfo);
-  const cartInfo = useSelector(state=>state.cartInfo);
+  const userInfo = useSelector(state => state.userInfo);
+  const cartInfo = useSelector(state => state.cartInfo);
   //const [loadding, setLoadding] = useState(false);
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -44,6 +71,9 @@ function ThanhToan({navigation}) {
   const [quanhuyenid, setQuanHuyenId] = useState('');
   const [phuongxaid, setPhuongXaId] = useState('');
   const [datatinhthanh, setDataTinhThanh] = useState([]);
+  const [cod, setCod] = useState(true);
+  const [maXacThuc, setMaXacThuc] = useState('');
+  let codeXacThuc = 0;
   useEffect(() => {
     //callback
     if (tinhthanhid && tinhthanhid.length > 0) setTinhThanhId(tinhthanhid);
@@ -167,12 +197,70 @@ function ThanhToan({navigation}) {
         value={ghichu}
         onChangeText={text => setGhiChu(text)}
       />
+
+      <View style={{flexDirection: 'row'}}>
+        <RadioButton
+          value="COD"
+          status={cod ? 'checked' : 'unchecked'}
+          onPress={() => setCod(true)}
+        />
+        <Text style={{flex: 1, fontSize: 26}}>COD</Text>
+
+        <RadioButton
+          value="ZALO PAY"
+          status={!cod ? 'checked' : 'unchecked'}
+          onPress={() => setCod(false)}
+        />
+        <Text style={{flex: 1, fontSize: 26}}>ZALO PAY</Text>
+      </View>
+
+      {cod ? (
+        <View style={{flexDirection: 'row'}}>
+          <TextInput
+            style={[styles.textInput, {flex: 4}]}
+            label="Mã xác nhận"
+            placeholder="Nhập mã xác nhận"
+            onChangeText={text => setMaXacThuc(text)}
+          />
+          <Text
+            style={[styles.lblLink, {flex: 1}]}
+            onPress={() => {
+              codeXacThuc = 111111;
+              codeXacThuc = Math.floor(Math.random() * 999999) + codeXacThuc;
+              GuiEmail(codeXacThuc, userInfo.EMAIL);
+            }}>
+            Lấy mã
+          </Text>
+        </View>
+      ) : null}
+
       <Button
         style={styles.btn}
         mode="contained"
         onPress={() => {
-          let params = {id, name, dienthoai, diachi, ghichu, tinhthanhid, quanhuyenid, phuongxaid};
-          thucHienThanhToan(dispatch, params, cartInfo.data);
+          if (cod) {
+            if (codeXacThuc == maXacThuc.toString() && maXacThuc.length > 0) {
+              let params = {
+                id,
+                name,
+                dienthoai,
+                diachi,
+                ghichu,
+                tinhthanhid,
+                quanhuyenid,
+                phuongxaid,
+                cod,
+              };
+              thucHienThanhToan(dispatch, params, cartInfo.data);
+            }
+            else{
+              alert("Vui lòng xác nhận đơn hàng");
+            }
+          }
+          else
+          {
+            alert("Thanh toán zalo pay");
+          }
         }}>
         <Text>Thanh toán</Text>
       </Button>
@@ -205,6 +293,12 @@ const styles = StyleSheet.create({
   },
   diaDiemText: {
     fontSize: 16,
+  },
+  lblLink: {
+    marginLeft: 10,
+    paddingTop: 20,
+    fontSize: 20,
+    color: 'blue',
   },
 });
 

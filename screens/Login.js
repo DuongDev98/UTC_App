@@ -4,6 +4,10 @@ import {Button, TextInput, HelperText, DataTable} from 'react-native-paper';
 import HttpClient from '../utils/HttpClient';
 import {useDispatch} from 'react-redux';
 import {SetUser} from '../reducers/actionCreator';
+// import {Settings, LoginButton, AccessToken} from 'react-native-fbsdk-next';
+
+// Settings.setAppID('5643084632402714');
+// Settings.initializeSDK();
 
 function btnLogin_Click(
   dispatch,
@@ -104,20 +108,34 @@ function Login({navigation}) {
         loading={loginLoadding}>
         Đăng nhập
       </Button>
-      <Button
+      {/* <Button
         icon="facebook"
         mode="contained"
         style={styles.btn}
         onPress={() => btnLoginFb_Click()}>
         Đăng nhập với facebook
-      </Button>
+      </Button> */}
+      {/* <LoginButton
+        onLoginFinished={(error, result) => {
+          if (error) {
+            console.log('login has error: ' + JSON.stringify(error));
+          } else if (result.isCancelled) {
+            console.log('login is cancelled.');
+          } else {
+            AccessToken.getCurrentAccessToken().then(data => {
+              console.log(data.accessToken.toString());
+            });
+          }
+        }}
+        onLogoutFinished={() => console.log('logout.')}
+      />
       <Button
         icon="google"
         mode="contained"
         style={styles.btn}
         onPress={() => btnLoginGg_Click()}>
         Đăng nhập với google
-      </Button>
+      </Button> */}
     </View>
   );
 }

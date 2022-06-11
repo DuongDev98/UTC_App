@@ -24,7 +24,7 @@ function DanhSachMatHang({navigation, route}) {
     }).catch(err=>{
       alert(err);
     });
-  });
+  }, []);
 
   return (
     <View style={styles.container}>
