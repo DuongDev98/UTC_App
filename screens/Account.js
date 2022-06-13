@@ -1,11 +1,27 @@
 import React, {Component, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, BackHandler} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  BackHandler,
+} from 'react-native';
 import {Avatar, Button, IconButton, Badge} from 'react-native-paper';
 import Contants from '../utils/Contants';
 import HttpClient from '../utils/HttpClient';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import { useDispatch, useSelector } from 'react-redux';
-import { SetUser, UploadAvatar } from '../reducers/actionCreator';
+import {useDispatch, useSelector} from 'react-redux';
+import {SetUser, UploadAvatar} from '../reducers/actionCreator';
+import {
+  Settings,
+  LoginButton,
+  AccessToken,
+  Profile,
+  LoginManager,
+} from 'react-native-fbsdk-next';
+
+Settings.setAppID('2546975805434214');
+Settings.initializeSDK();
 
 function editProfile(navigation) {
   navigation.navigate('EditProfileSc');
@@ -14,9 +30,12 @@ function editProfile(navigation) {
 function danhSachDonHang(navigation, userInfo, trangthai) {
   //0 chờ xử lý
   //2 đang giao hàng
-  HttpClient.GetJson('danhSachDonHang', { DKHACHHANGID: userInfo.ID, TRANGTHAI: (trangthai == -1 ? '' : trangthai )}).then(json=>{
+  HttpClient.GetJson('danhSachDonHang', {
+    DKHACHHANGID: userInfo.ID,
+    TRANGTHAI: trangthai == -1 ? '' : trangthai,
+  }).then(json => {
     if (json.isSuccess) {
-      navigation.navigate("DanhSachDonHangSc", {data: json.data.arr});
+      navigation.navigate('DanhSachDonHangSc', {data: json.data.arr});
     } else {
       alert(json.message);
     }
@@ -31,7 +50,7 @@ async function uploadAvatar(user, dispatch) {
 
   if (!img.didCancel) {
     img.khachhangid = user.ID;
-    HttpClient.GetJson('uploadavatar', img).then(json=>{
+    HttpClient.GetJson('uploadavatar', img).then(json => {
       if (json.isSuccess) {
         dispatch(UploadAvatar(json.data.img));
       } else {
@@ -41,18 +60,17 @@ async function uploadAvatar(user, dispatch) {
   }
 }
 
-function Account ({navigation}) {
-  let user = useSelector(state=>state.userInfo);
+function Account({navigation}) {
+  let user = useSelector(state => state.userInfo);
   let dispatch = useDispatch();
   let [slChoXyLy, setSlChoXyLy] = useState(0);
   let [slDangGiao, setSlDangGiao] = useState(0);
 
-  useEffect(()=>{
+  useEffect(() => {
     let isMounted = true;
-    HttpClient.GetJson('soLuongDon', {ID: user.ID}).then(json=>{
+    HttpClient.GetJson('soLuongDon', {ID: user.ID}).then(json => {
       if (json.isSuccess) {
-        if (isMounted)
-        {
+        if (isMounted) {
           setSlChoXyLy(json.data.slChoXyLy);
           setSlDangGiao(json.data.slDangGiao);
         }
@@ -103,7 +121,9 @@ function Account ({navigation}) {
               onPress={() => danhSachDonHang(navigation, user, 0)}
               style={styles.containerBtn}>
               <View style={styles.iconBtn}>
-                <Badge size={25} style={{position: 'absolute'}}>{slChoXyLy}</Badge>
+                <Badge size={25} style={{position: 'absolute'}}>
+                  {slChoXyLy}
+                </Badge>
                 <Text style={{fontSize: 16}}>Chở xử lý</Text>
               </View>
             </TouchableOpacity>
@@ -111,19 +131,33 @@ function Account ({navigation}) {
               onPress={() => danhSachDonHang(navigation, user, 2)}
               style={styles.containerBtn}>
               <View style={styles.iconBtn}>
-                <Badge size={25}style={{position: 'absolute'}}>{slDangGiao}</Badge>
+                <Badge size={25} style={{position: 'absolute'}}>
+                  {slDangGiao}
+                </Badge>
                 <Text style={{fontSize: 16}}>Đang giao hàng</Text>
               </View>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {
-                dispatch(SetUser(null));
-                navigation.navigate("Login_Register_Sc");
-              }}
-              style={[styles.containerBtn, {backgroundColor: '#ff9354'}]}>
-              <Text style={{fontSize: 16, textAlign: 'right'}}>Đăng xuất</Text>
-            </TouchableOpacity>
+            {user.isFbAcc ? (
+              <View style={{marginTop: 5}}>
+                <LoginButton
+                  onLogoutFinished={() => {
+                    dispatch(SetUser(null));
+                    navigation.navigate('Login_Register_Sc');
+                  }}
+                />
+              </View>
+            ) : (
+              <Button
+                icon="logout"
+                mode="contained"
+                style={{marginTop: 5}}
+                onPress={() =>{
+                  dispatch(SetUser(null));
+                  navigation.navigate('Login_Register_Sc');
+                }}>
+                Đăng xuất
+              </Button>
+            )}
           </View>
         </View>
       )}

@@ -176,7 +176,8 @@ const styles = StyleSheet.create({
   titleNhom: {
     padding: 10,
     fontSize: 25,
-    backgroundColor: '#ff7940',
+    backgroundColor: 'orange',
+    color: 'white',
     marginBottom: 10,
   },
   pnNhom: {
