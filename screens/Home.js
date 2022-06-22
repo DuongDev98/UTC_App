@@ -118,7 +118,7 @@ function Home({navigation}) {
           {dataNhomHangs.map((item, i) => {
             return (
               <View key={item.ID}>
-                <View style={{flexDirection: 'row', padding: 10}}>
+                <View style={{flexDirection: 'row', padding: 10, backgroundColor: 'white'}}>
                   <Text style={{fontWeight: 'bold', fontSize: 20}}>
                     {item.NAME}
                   </Text>
@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
   titleNhom: {
     padding: 10,
     fontSize: 25,
-    backgroundColor: 'orange',
-    color: 'white',
+    backgroundColor: 'white',
+    color: 'black',
     marginBottom: 10,
   },
   pnNhom: {
