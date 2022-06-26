@@ -18,9 +18,10 @@ function thucHienThanhToan(
     tinhthanhid,
     quanhuyenid,
     phuongxaid,
-    cod,
+    //cod,
   },
   dsChiTiet,
+  tiLeGiamGia
 ) {
   //chuẩn bị dữ liệu
   let donHang = {};
@@ -32,7 +33,8 @@ function thucHienThanhToan(
   donHang.DTINHTHANHID = tinhthanhid;
   donHang.DQUANHUYENID = quanhuyenid;
   donHang.DPHUONGXAID = phuongxaid;
-  donHang.COD = cod ? 30 : 0;
+  //donHang.COD = cod ? 30 : 0;
+  donHang.TILEGIAMGIA = tiLeGiamGia;
   donHang.TDONHANGCHITIETs = dsChiTiet;
   HttpClient.GetJson('thucHienThanhToan', donHang).then(json => {
     if (json.isSuccess) {
@@ -56,7 +58,7 @@ function GuiEmail(code, email) {
   );
 }
 
-function ThanhToan({navigation}) {
+function ThanhToan({navigation, route}) {
   const dispatch = useDispatch();
   const userInfo = useSelector(state => state.userInfo);
   const cartInfo = useSelector(state => state.cartInfo);
@@ -71,9 +73,9 @@ function ThanhToan({navigation}) {
   const [quanhuyenid, setQuanHuyenId] = useState('');
   const [phuongxaid, setPhuongXaId] = useState('');
   const [datatinhthanh, setDataTinhThanh] = useState([]);
-  const [cod, setCod] = useState(true);
+  //const [cod, setCod] = useState(true);
   const [maXacThuc, setMaXacThuc] = useState('');
-  let codeXacThuc = 0;
+  const [codeXacThuc, setCodeXacThuc] = useState('');
   useEffect(() => {
     //callback
     if (tinhthanhid && tinhthanhid.length > 0) setTinhThanhId(tinhthanhid);
@@ -198,7 +200,7 @@ function ThanhToan({navigation}) {
         onChangeText={text => setGhiChu(text)}
       />
 
-      <View style={{flexDirection: 'row'}}>
+      {/* <View style={{flexDirection: 'row'}}>
         <RadioButton
           value="COD"
           status={cod ? 'checked' : 'unchecked'}
@@ -212,10 +214,9 @@ function ThanhToan({navigation}) {
           onPress={() => setCod(false)}
         />
         <Text style={{flex: 1, fontSize: 26}}>ZALO PAY</Text>
-      </View>
+      </View> */}
 
-      {cod ? (
-        <View style={{flexDirection: 'row'}}>
+      <View style={{flexDirection: 'row'}}>
           <TextInput
             style={[styles.textInput, {flex: 4}]}
             label="Mã xác nhận"
@@ -225,21 +226,20 @@ function ThanhToan({navigation}) {
           <Text
             style={[styles.lblLink, {flex: 1}]}
             onPress={() => {
-              codeXacThuc = 111111;
-              codeXacThuc = Math.floor(Math.random() * 999999) + codeXacThuc;
-              GuiEmail(codeXacThuc, userInfo.EMAIL);
+              let temp = 111111;
+              temp = Math.floor(Math.random() * 999999) + temp;
+              setCodeXacThuc(temp.toString());
+              GuiEmail(temp, userInfo.EMAIL);
             }}>
             Lấy mã
           </Text>
         </View>
-      ) : null}
 
       <Button
         style={styles.btn}
         mode="contained"
         onPress={() => {
-          if (cod) {
-            if (codeXacThuc == maXacThuc.toString() && maXacThuc.length > 0) {
+          if (codeXacThuc == maXacThuc && maXacThuc.length > 0) {
               let params = {
                 id,
                 name,
@@ -249,18 +249,13 @@ function ThanhToan({navigation}) {
                 tinhthanhid,
                 quanhuyenid,
                 phuongxaid,
-                cod,
+                //cod,
               };
-              thucHienThanhToan(dispatch, params, cartInfo.data);
+              thucHienThanhToan(dispatch, params, cartInfo.data, route.params.tiLeGiamGia);
             }
             else{
               alert("Vui lòng xác nhận đơn hàng");
             }
-          }
-          else
-          {
-            alert("Thanh toán zalo pay");
-          }
         }}>
         <Text>Thanh toán</Text>
       </Button>
