@@ -1,5 +1,6 @@
-import React, {Component, useState} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import {BottomNavigation, Text} from 'react-native-paper';
+import { useSelector } from 'react-redux';
 import Account from './Account';
 import Cart from './Cart';
 import Feed from './Feed';
@@ -10,14 +11,14 @@ function Main({navigation}) {
   const [routes, setRoutes] = useState([
     {key: 'home', title: 'Home', icon: 'home'},
     {key: 'feed', title: 'Feed', icon: 'newspaper-variant-outline'},
-    {key: 'cart', title: 'Cart', icon: 'cart'},
+    {key: 'cart', title: 'Cart', icon: 'cart' },
     {key: 'account', title: 'Account', icon: 'account'},
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
     home: () => <Home navigation={navigation} />,
     feed: () => <Feed navigation={navigation} />,
-    cart: () => <Cart navigation={navigation} />,
+    cart: () => <Cart navigation={navigation}/>,
     account: () => <Account navigation={navigation} />,
   });
 

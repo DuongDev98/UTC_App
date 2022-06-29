@@ -1,7 +1,8 @@
-import { INCRETOCART, DECRETOCART, REMOVETOCART, CLEARTOCART } from './typeaction';
+import { INCRETOCART, DECRETOCART, REMOVETOCART, CLEARTOCART, SETPAYMENT } from './typeaction';
 
 const initCartSate = {
-  data: []
+  data: [],
+  info: {}
 };
 
 const cartReducer = (state = initCartSate, action) => {
@@ -38,6 +39,15 @@ const cartReducer = (state = initCartSate, action) => {
   if (action.type == CLEARTOCART) {
     return {
       ...state, data: []
+    };
+  }
+
+  if (action.type == SETPAYMENT) {
+    return {
+      ...state, info: {
+        ...state.info,
+        ...action.payload
+      }
     };
   }
   

@@ -7,6 +7,7 @@ import {
   RemoveToCart,
   IncreToCart,
   DecreToCart,
+  SetPayment
 } from '../reducers/actionCreator';
 import HttpClient from '../utils/HttpClient';
 
@@ -63,11 +64,11 @@ function itemList(dispatch, item) {
   );
 }
 
-function thanhToan(navigation, cartInfo, userInfo, tiLeGiamGia) {
+function thanhToan(navigation, cartInfo, userInfo) {
   if (cartInfo.data.length == 0) alert('Dữ liệu đặt hàng trống');
   else if ((userInfo.EMAIL ?? '').length == 0)
     alert('Bạn cần cập nhật Email trước');
-  else navigation.navigate('ThanhToanSc', {tiLeGiamGia});
+  else navigation.navigate('ThanhToanSc');
 }
 
 function Cart({navigation}) {
@@ -75,7 +76,6 @@ function Cart({navigation}) {
   let userInfo = useSelector(state => state.userInfo);  
   let [tienHang, setTienHang] = useState(0);
   let [kms, setKMS] = useState([]);
-  let [tiLeGiamGia, setTiLeGiamGia] = useState(0);
   useEffect(() => {
     //lấy danh sách đợt khuyến mại
     HttpClient.GetJson('layKhuyenMai', null).then(json => {
@@ -92,7 +92,7 @@ function Cart({navigation}) {
     kms.forEach(element => {
       if (tienHang >= element.TONGBILL) temp = element.PHANTRAMGIAMGIA;
     });
-    setTiLeGiamGia(temp);
+    dispatch(SetPayment({tiLeGiamGia: temp}));
   }
 
   //tính khuyến mại
@@ -125,15 +125,15 @@ function Cart({navigation}) {
           </View>
           <View style={styles.vText}>
             <Text style={styles.lbl}>Tỉ lệ giảm giá</Text>
-            <Text style={styles.lbl1}>{parseInt(tiLeGiamGia)}</Text>
+            <Text style={styles.lbl1}>{parseInt(cartInfo.info.tiLeGiamGia)}</Text>
           </View>
           <View style={styles.vText}>
             <Text style={styles.lbl}>Tiền giảm giá</Text>
-            <Text style={styles.lbl1}>{parseInt(tiLeGiamGia) == 0 ? 0 : (parseInt(tiLeGiamGia) * parseInt(tienHang) / 100)}</Text>
+            <Text style={styles.lbl1}>{parseInt(cartInfo.info.tiLeGiamGia) == 0 ? 0 : (parseInt(cartInfo.info.tiLeGiamGia) * parseInt(tienHang) / 100)}</Text>
           </View>
           <View style={styles.vText}>
             <Text style={styles.lbl}>Tổng cộng</Text>
-            <Text style={styles.lbl1}>{parseInt(tienHang) - (parseInt(tiLeGiamGia) == 0 ? 0 : (parseInt(tiLeGiamGia) * parseInt(tienHang) / 100))}</Text>
+            <Text style={styles.lbl1}>{parseInt(tienHang) - (parseInt(cartInfo.info.tiLeGiamGia) == 0 ? 0 : (parseInt(cartInfo.info.tiLeGiamGia) * parseInt(tienHang) / 100))}</Text>
           </View>
           {cartInfo.data.map((item, index) => itemList(dispatch, item))}
         </View>
@@ -142,7 +142,7 @@ function Cart({navigation}) {
         color="white"
         icon={'cash-fast'}
         style={styles.btnThanhToan}
-        onPress={() => thanhToan(navigation, cartInfo, userInfo, tiLeGiamGia)}
+        onPress={() => thanhToan(navigation, cartInfo, userInfo)}
       />
     </View>
   );

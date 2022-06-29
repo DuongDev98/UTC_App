@@ -6,6 +6,7 @@ import {
   REMOVEUSER,
   SETUSER,
   UPLOADAVATAR,
+  SETPAYMENT
 } from './typeaction';
 
 export const IncreToCart = o => {
@@ -52,5 +53,12 @@ export const SetUser = o => {
 export const RemoveUser = () => {
   return {
     type: REMOVEUSER,
+  };
+};
+
+export const SetPayment = o => {
+  return {
+    type: SETPAYMENT,
+    payload: o
   };
 };

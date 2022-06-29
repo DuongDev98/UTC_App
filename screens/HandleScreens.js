@@ -10,9 +10,8 @@ import DanhSachMatHangSc from './DanhSachMatHang';
 import MatHangSc from './MatHang';
 import ThanhToanSc from './ThanhToan';
 import DanhSachDonHangSc from './DanhSachDonHang';
-
+import NhanHangThanhToanSc from './NhanHangThanhToan';
 const Stack = createNativeStackNavigator();
-
 function HandleScreens() {
     return (
         <NavigationContainer>
@@ -26,6 +25,7 @@ function HandleScreens() {
                 <Stack.Screen name="MatHangSc" component={MatHangSc} options={{ headerShown: true, title: "Chi tiết sản phẩm" }} />
                 <Stack.Screen name="ThanhToanSc" component={ThanhToanSc} options={{ headerShown: true, title: "Thanh toán" }} />
                 <Stack.Screen name="DanhSachDonHangSc" component={DanhSachDonHangSc} options={{ headerShown: true, title: "Lịch sử mua hàng" }} />
+                <Stack.Screen name="NhanHangThanhToanSc" component={NhanHangThanhToanSc} options={{ headerShown: true, title: "Xác nhận thanh toán" }} />
             </Stack.Navigator>
         </NavigationContainer>
     );

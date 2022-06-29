@@ -5,3 +5,4 @@ export const INCRETOCART = 'INCRETOCART';
 export const DECRETOCART = 'DECRETOCART';
 export const REMOVETOCART = 'REMOVETOCART';
 export const CLEARTOCART = 'CLEARTOCART';
+export const SETPAYMENT = 'SETPAYMENT';

@@ -1,68 +1,16 @@
-import React, {Component, useEffect, useState} from 'react';
-import Memory from '../utils/Memory';
+import React, {Component, useCallback, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {TextInput, Button, IconButton, RadioButton} from 'react-native-paper';
 import {Picker} from '@react-native-picker/picker';
 import HttpClient from '../utils/HttpClient';
 import {useDispatch, useSelector} from 'react-redux';
-import {ClearToCart} from '../reducers/actionCreator';
-
-function thucHienThanhToan(
-  dispatch,
-  {
-    id,
-    name,
-    dienthoai,
-    diachi,
-    ghichu,
-    tinhthanhid,
-    quanhuyenid,
-    phuongxaid,
-    //cod,
-  },
-  dsChiTiet,
-  tiLeGiamGia
-) {
-  //chuẩn bị dữ liệu
-  let donHang = {};
-  donHang.DKHACHHANGID = id;
-  donHang.TENNGUOINHAN = name;
-  donHang.DIENTHOAI = dienthoai;
-  donHang.DIACHI = diachi;
-  donHang.GHICHU = ghichu;
-  donHang.DTINHTHANHID = tinhthanhid;
-  donHang.DQUANHUYENID = quanhuyenid;
-  donHang.DPHUONGXAID = phuongxaid;
-  //donHang.COD = cod ? 30 : 0;
-  donHang.TILEGIAMGIA = tiLeGiamGia;
-  donHang.TDONHANGCHITIETs = dsChiTiet;
-  HttpClient.GetJson('thucHienThanhToan', donHang).then(json => {
-    if (json.isSuccess) {
-      alert('Đặt hàng thành công');
-      dispatch(ClearToCart());
-    } else {
-      alert(json.message);
-    }
-  });
-}
-
-function GuiEmail(code, email) {
-  HttpClient.GetJson('guiEmailXacNhan', {CODE: code, EMAIL: email}).then(
-    json => {
-      if (json.isSuccess) {
-        alert('Vui lòng kiểm tra email: ' + email + ' để lấy mã xác nhận');
-      } else {
-        alert(json.message);
-      }
-    },
-  );
-}
+import {SetPayment} from '../reducers/actionCreator';
 
 function ThanhToan({navigation, route}) {
   const dispatch = useDispatch();
   const userInfo = useSelector(state => state.userInfo);
   const cartInfo = useSelector(state => state.cartInfo);
-  //const [loadding, setLoadding] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [dienthoai, setDienThoai] = useState('');
@@ -73,9 +21,7 @@ function ThanhToan({navigation, route}) {
   const [quanhuyenid, setQuanHuyenId] = useState('');
   const [phuongxaid, setPhuongXaId] = useState('');
   const [datatinhthanh, setDataTinhThanh] = useState([]);
-  //const [cod, setCod] = useState(true);
-  const [maXacThuc, setMaXacThuc] = useState('');
-  const [codeXacThuc, setCodeXacThuc] = useState('');
+
   useEffect(() => {
     //callback
     if (tinhthanhid && tinhthanhid.length > 0) setTinhThanhId(tinhthanhid);
@@ -129,7 +75,35 @@ function ThanhToan({navigation, route}) {
     });
   }, [quanhuyenid]);
 
+  const thucHienThanhToan = useCallback(()=>{
+    alert('213');
+  });
+
   return (
+    showModal ?
+    <View style={styles.container}>
+      <Button
+        style={styles.btn}
+        mode="contained"
+        onPress={() => navigation.navigate("NhanHangThanhToanSc", {callBack: thucHienThanhToan})}>
+        <Text>Nhận hàng thanh toán</Text>
+      </Button>
+
+      <Button
+        style={styles.btn}
+        mode="contained"
+        onPress={() => {}}>
+        <Text>PayPal</Text>
+      </Button>
+
+      <Button
+        style={styles.btn}
+        mode="contained"
+        onPress={() => {}}>
+        <Text>ZaloPay</Text>
+      </Button>
+    </View>
+    :
     <View style={styles.container}>
       <TextInput
         style={styles.textInput}
@@ -200,62 +174,22 @@ function ThanhToan({navigation, route}) {
         onChangeText={text => setGhiChu(text)}
       />
 
-      {/* <View style={{flexDirection: 'row'}}>
-        <RadioButton
-          value="COD"
-          status={cod ? 'checked' : 'unchecked'}
-          onPress={() => setCod(true)}
-        />
-        <Text style={{flex: 1, fontSize: 26}}>COD</Text>
-
-        <RadioButton
-          value="ZALO PAY"
-          status={!cod ? 'checked' : 'unchecked'}
-          onPress={() => setCod(false)}
-        />
-        <Text style={{flex: 1, fontSize: 26}}>ZALO PAY</Text>
-      </View> */}
-
-      <View style={{flexDirection: 'row'}}>
-          <TextInput
-            style={[styles.textInput, {flex: 4}]}
-            label="Mã xác nhận"
-            placeholder="Nhập mã xác nhận"
-            onChangeText={text => setMaXacThuc(text)}
-          />
-          <Text
-            style={[styles.lblLink, {flex: 1}]}
-            onPress={() => {
-              let temp = 111111;
-              temp = Math.floor(Math.random() * 999999) + temp;
-              setCodeXacThuc(temp.toString());
-              GuiEmail(temp, userInfo.EMAIL);
-            }}>
-            Lấy mã
-          </Text>
-        </View>
-
       <Button
         style={styles.btn}
         mode="contained"
         onPress={() => {
-          if (codeXacThuc == maXacThuc && maXacThuc.length > 0) {
-              let params = {
-                id,
-                name,
-                dienthoai,
-                diachi,
-                ghichu,
-                tinhthanhid,
-                quanhuyenid,
-                phuongxaid,
-                //cod,
-              };
-              thucHienThanhToan(dispatch, params, cartInfo.data, route.params.tiLeGiamGia);
-            }
-            else{
-              alert("Vui lòng xác nhận đơn hàng");
-            }
+          let params = {
+            id,
+            name,
+            dienthoai,
+            diachi,
+            ghichu,
+            tinhthanhid,
+            quanhuyenid,
+            phuongxaid,
+          };
+          dispatch(SetPayment(params));
+          setShowModal(true);
         }}>
         <Text>Thanh toán</Text>
       </Button>
@@ -298,3 +232,42 @@ const styles = StyleSheet.create({
 });
 
 export default ThanhToan;
+
+// function thucHienThanhToan(
+//   dispatch,
+//   {
+//     id,
+//     name,
+//     dienthoai,
+//     diachi,
+//     ghichu,
+//     tinhthanhid,
+//     quanhuyenid,
+//     phuongxaid,
+//     //cod,
+//   },
+//   dsChiTiet,
+//   tiLeGiamGia
+// ) {
+//   //chuẩn bị dữ liệu
+//   let donHang = {};
+//   donHang.DKHACHHANGID = id;
+//   donHang.TENNGUOINHAN = name;
+//   donHang.DIENTHOAI = dienthoai;
+//   donHang.DIACHI = diachi;
+//   donHang.GHICHU = ghichu;
+//   donHang.DTINHTHANHID = tinhthanhid;
+//   donHang.DQUANHUYENID = quanhuyenid;
+//   donHang.DPHUONGXAID = phuongxaid;
+//   //donHang.COD = cod ? 30 : 0;
+//   donHang.TILEGIAMGIA = tiLeGiamGia;
+//   donHang.TDONHANGCHITIETs = dsChiTiet;
+//   HttpClient.GetJson('thucHienThanhToan', donHang).then(json => {
+//     if (json.isSuccess) {
+//       alert('Đặt hàng thành công');
+//       dispatch(ClearToCart());
+//     } else {
+//       alert(json.message);
+//     }
+//   });
+// }
