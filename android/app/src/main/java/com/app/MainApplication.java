@@ -35,6 +35,7 @@ public class MainApplication extends Application implements ReactApplication {
           // packages.add(new MyReactNativePackage());
             //packages.add(new PayZaloBridge());
             packages.add(new com.app.zpmodule.PayZaloBridge());
+            // packages.add(new RNPaypalPackage());
           return packages;
         }
 

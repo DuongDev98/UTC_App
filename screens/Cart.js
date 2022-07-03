@@ -6,8 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   RemoveToCart,
   IncreToCart,
-  DecreToCart,
-  SetPayment
+  DecreToCart
 } from '../reducers/actionCreator';
 import HttpClient from '../utils/HttpClient';
 
@@ -64,17 +63,18 @@ function itemList(dispatch, item) {
   );
 }
 
-function thanhToan(navigation, cartInfo, userInfo) {
+function thanhToan(navigation, cartInfo, userInfo, tiLeGiamGia) {
   if (cartInfo.data.length == 0) alert('Dữ liệu đặt hàng trống');
   else if ((userInfo.EMAIL ?? '').length == 0)
     alert('Bạn cần cập nhật Email trước');
-  else navigation.navigate('ThanhToanSc');
+  else navigation.navigate('ThanhToanSc', {tiLeGiamGia});
 }
 
 function Cart({navigation}) {
   let cartInfo = useSelector(state => state.cartInfo);
   let userInfo = useSelector(state => state.userInfo);  
   let [tienHang, setTienHang] = useState(0);
+  let [tiLeGiamGia, setTiLeGiamGia] = useState(0);
   let [kms, setKMS] = useState([]);
   useEffect(() => {
     //lấy danh sách đợt khuyến mại
@@ -92,7 +92,7 @@ function Cart({navigation}) {
     kms.forEach(element => {
       if (tienHang >= element.TONGBILL) temp = element.PHANTRAMGIAMGIA;
     });
-    dispatch(SetPayment({tiLeGiamGia: temp}));
+    setTiLeGiamGia(temp);
   }
 
   //tính khuyến mại
@@ -125,15 +125,15 @@ function Cart({navigation}) {
           </View>
           <View style={styles.vText}>
             <Text style={styles.lbl}>Tỉ lệ giảm giá</Text>
-            <Text style={styles.lbl1}>{parseInt(cartInfo.info.tiLeGiamGia)}</Text>
+            <Text style={styles.lbl1}>{parseInt(tiLeGiamGia)}</Text>
           </View>
           <View style={styles.vText}>
             <Text style={styles.lbl}>Tiền giảm giá</Text>
-            <Text style={styles.lbl1}>{parseInt(cartInfo.info.tiLeGiamGia) == 0 ? 0 : (parseInt(cartInfo.info.tiLeGiamGia) * parseInt(tienHang) / 100)}</Text>
+            <Text style={styles.lbl1}>{parseInt(tiLeGiamGia) == 0 ? 0 : (parseInt(tiLeGiamGia) * parseInt(tienHang) / 100)}</Text>
           </View>
           <View style={styles.vText}>
-            <Text style={styles.lbl}>Tổng cộng</Text>
-            <Text style={styles.lbl1}>{parseInt(tienHang) - (parseInt(cartInfo.info.tiLeGiamGia) == 0 ? 0 : (parseInt(cartInfo.info.tiLeGiamGia) * parseInt(tienHang) / 100))}</Text>
+            <Text style={styles.lbl}>Tổng cộng(chưa phí vc)</Text>
+            <Text style={styles.lbl1}>{parseInt(tienHang) - (parseInt(tiLeGiamGia) == 0 ? 0 : (parseInt(tiLeGiamGia) * parseInt(tienHang) / 100))}</Text>
           </View>
           {cartInfo.data.map((item, index) => itemList(dispatch, item))}
         </View>
@@ -142,7 +142,7 @@ function Cart({navigation}) {
         color="white"
         icon={'cash-fast'}
         style={styles.btnThanhToan}
-        onPress={() => thanhToan(navigation, cartInfo, userInfo)}
+        onPress={() => thanhToan(navigation, cartInfo, userInfo, tiLeGiamGia)}
       />
     </View>
   );

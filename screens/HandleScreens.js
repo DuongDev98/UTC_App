@@ -11,6 +11,8 @@ import MatHangSc from './MatHang';
 import ThanhToanSc from './ThanhToan';
 import DanhSachDonHangSc from './DanhSachDonHang';
 import NhanHangThanhToanSc from './NhanHangThanhToan';
+import PaypalSc from './PayPal';
+import ChonDiaDiemSc from './ChonDiaDiem';
 const Stack = createNativeStackNavigator();
 function HandleScreens() {
     return (
@@ -26,6 +28,8 @@ function HandleScreens() {
                 <Stack.Screen name="ThanhToanSc" component={ThanhToanSc} options={{ headerShown: true, title: "Thanh toán" }} />
                 <Stack.Screen name="DanhSachDonHangSc" component={DanhSachDonHangSc} options={{ headerShown: true, title: "Lịch sử mua hàng" }} />
                 <Stack.Screen name="NhanHangThanhToanSc" component={NhanHangThanhToanSc} options={{ headerShown: true, title: "Xác nhận thanh toán" }} />
+                <Stack.Screen name="PaypalSc" component={PaypalSc} options={{ headerShown: true, title: "Paypal payment" }} />
+                <Stack.Screen name="ChonDiaDiemSc" component={ChonDiaDiemSc} options={{ headerShown: true, title: "Chọn địa điểm" }} />
             </Stack.Navigator>
         </NavigationContainer>
     );

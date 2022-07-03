@@ -295,6 +295,9 @@ dependencies {
 
     //fb sdk
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
+    implementation project(':react-native-paypal')
+    implementation "com.braintreepayments.api:braintree:3.+"
+    implementation "com.braintreepayments.api:braintree:3.+"
 }
 
 if (isNewArchitectureEnabled()) {

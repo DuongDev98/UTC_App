@@ -56,9 +56,9 @@ export const RemoveUser = () => {
   };
 };
 
-export const SetPayment = o => {
-  return {
-    type: SETPAYMENT,
-    payload: o
-  };
-};
+// export const SetPayment = o => {
+//   return {
+//     type: SETPAYMENT,
+//     payload: o
+//   };
+// };

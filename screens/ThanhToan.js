@@ -1,13 +1,11 @@
-import React, {Component, useCallback, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {TextInput, Button, IconButton, RadioButton} from 'react-native-paper';
-import {Picker} from '@react-native-picker/picker';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, DeviceEventEmitter, TouchableOpacity} from 'react-native';
+import {TextInput, Button} from 'react-native-paper';
 import HttpClient from '../utils/HttpClient';
 import {useDispatch, useSelector} from 'react-redux';
-import {SetPayment} from '../reducers/actionCreator';
+import {ClearToCart} from '../reducers/actionCreator';
 
 function ThanhToan({navigation, route}) {
-  const dispatch = useDispatch();
   const userInfo = useSelector(state => state.userInfo);
   const cartInfo = useSelector(state => state.cartInfo);
   const [showModal, setShowModal] = useState(false);
@@ -18,92 +16,100 @@ function ThanhToan({navigation, route}) {
   const [diachi, setDiaChi] = useState('');
   const [ghichu, setGhiChu] = useState('');
   const [tinhthanhid, setTinhThanhId] = useState('');
+  const [tenTinhThanh, setTenTinhThanh] = useState('');
   const [quanhuyenid, setQuanHuyenId] = useState('');
+  const [tenQuanHuyen, setTenQuanHuyen] = useState('');
   const [phuongxaid, setPhuongXaId] = useState('');
-  const [datatinhthanh, setDataTinhThanh] = useState([]);
-
-  useEffect(() => {
-    //callback
-    if (tinhthanhid && tinhthanhid.length > 0) setTinhThanhId(tinhthanhid);
-  }, [datatinhthanh]);
-  const [dataquanhuyen, setDataQuanHuyen] = useState([]);
-  useEffect(() => {
-    //callback
-    if (quanhuyenid && quanhuyenid.length > 0) setQuanHuyenId(quanhuyenid);
-  }, [dataquanhuyen]);
-  const [dataphuongxa, setDataPhuongXa] = useState([]);
-  useEffect(() => {
-    //callback
-    if (phuongxaid && phuongxaid.length > 0) setPhuongXaId(phuongxaid);
-  }, [dataphuongxa]);
+  const [tenPhuongXa, setTenPhuongXa] = useState('');
 
   useEffect(() => {
     setId(userInfo.ID);
     setName(userInfo.NAME);
     setDienThoai(userInfo.DIENTHOAI);
     setDiaChi(userInfo.DIACHI);
-    //setEmail(userInfo.EMAIL);
     setTinhThanhId(userInfo.DTINHTHANHID);
+    setTenTinhThanh(userInfo.DTINHTHANH_NAME);
     setQuanHuyenId(userInfo.DQUANHUYENID);
+    setTenQuanHuyen(userInfo.DQUANHUYEN_NAME);
     setPhuongXaId(userInfo.DPHUONGXAID);
-    HttpClient.GetJson('dsTinhThanh', null).then(json => {
-      if (json.isSuccess) {
-        setDataTinhThanh(json.data.arr);
-      } else {
-        alert(json.message);
-      }
+    setTenPhuongXa(userInfo.DPHUONGXA_NAME);
+
+    DeviceEventEmitter.addListener('payment', paymentMethod =>
+      thucHienThanhToan(paymentMethod),
+    );
+
+    DeviceEventEmitter.addListener('chonTinhThanh', (p1, p2) => {
+      setTinhThanhId(p1);
+      setTenTinhThanh(p2);
+      setQuanHuyenId('');
+      setTenQuanHuyen('');
+      setPhuongXaId('');
+      setTenPhuongXa('');
     });
+
+    DeviceEventEmitter.addListener('chonQuanHuyen', (p1, p2) => {
+      setQuanHuyenId(p1);
+      setTenQuanHuyen(p2);
+      setPhuongXaId('');
+      setTenPhuongXa('');
+    });
+
+    DeviceEventEmitter.addListener('chonPhuongXa', (p1, p2) => {
+      setPhuongXaId(p1);
+      setTenPhuongXa(p2);
+    });
+
+    return () => {
+      DeviceEventEmitter.removeAllListeners();
+    };
   }, []);
 
-  useEffect(() => {
-    HttpClient.GetJson('dsQuanHuyen', {ID: tinhthanhid}).then(json => {
+  function thucHienThanhToan(paymentMethod) {
+    setShowModal(false);
+    let donHang = {};
+    donHang.DKHACHHANGID = id;
+    donHang.TENNGUOINHAN = name;
+    donHang.DIENTHOAI = dienthoai;
+    donHang.DIACHI = diachi;
+    donHang.GHICHU = ghichu;
+    donHang.DTINHTHANHID = tinhthanhid;
+    donHang.DQUANHUYENID = quanhuyenid;
+    donHang.DPHUONGXAID = phuongxaid;
+    donHang.TILEGIAMGIA = route.params.tiLeGiamGia;
+    donHang.HINHTHUCTHANHTOAN = paymentMethod;
+    donHang.TDONHANGCHITIETs = cartInfo.data;
+    HttpClient.GetJson('thucHienThanhToan', donHang).then(json => {
       if (json.isSuccess) {
-        setDataQuanHuyen(json.data.arr);
+        alert('Đặt hàng thành công');
+        dispatch(ClearToCart());
+        navigation.goBack();
       } else {
         alert(json.message);
       }
     });
-  }, [tinhthanhid]);
+  }
 
-  useEffect(() => {
-    HttpClient.GetJson('dsPhuongXa', {ID: quanhuyenid}).then(json => {
-      if (json.isSuccess) {
-        setDataPhuongXa(json.data.arr);
-      } else {
-        alert(json.message);
-      }
-    });
-  }, [quanhuyenid]);
-
-  const thucHienThanhToan = useCallback(()=>{
-    alert('213');
-  });
-
-  return (
-    showModal ?
+  return showModal ? (
     <View style={styles.container}>
       <Button
         style={styles.btn}
         mode="contained"
-        onPress={() => navigation.navigate("NhanHangThanhToanSc", {callBack: thucHienThanhToan})}>
+        onPress={() => navigation.navigate('NhanHangThanhToanSc')}>
         <Text>Nhận hàng thanh toán</Text>
       </Button>
 
       <Button
         style={styles.btn}
         mode="contained"
-        onPress={() => {}}>
+        onPress={() => navigation.navigate('PaypalSc')}>
         <Text>PayPal</Text>
       </Button>
 
-      <Button
-        style={styles.btn}
-        mode="contained"
-        onPress={() => {}}>
+      <Button style={styles.btn} mode="contained" onPress={() => {}}>
         <Text>ZaloPay</Text>
       </Button>
     </View>
-    :
+  ) : (
     <View style={styles.container}>
       <TextInput
         style={styles.textInput}
@@ -120,45 +126,45 @@ function ThanhToan({navigation, route}) {
         onChangeText={text => setDienThoai(text)}
       />
       {/* Tỉnh thành */}
-      <Picker
-        style={styles.combobox}
-        selectedValue={tinhthanhid}
-        onValueChange={(itemValue, itemIndex) => {
-          if (itemValue != tinhthanhid) {
-            setTinhThanhId(itemValue);
-          }
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('ChonDiaDiemSc', {LOAI: 0});
         }}>
-        {datatinhthanh.map((val, i) => {
-          return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
-        })}
-      </Picker>
-
+        <TextInput
+          editable={false}
+          style={styles.textInput}
+          label="Tỉnh thành"
+          placeholder="Tỉnh thành"
+          value={tenTinhThanh}
+        />
+      </TouchableOpacity>
       {/* Quận huyện */}
-      <Picker
-        style={styles.combobox}
-        selectedValue={quanhuyenid}
-        onValueChange={(itemValue, itemIndex) => {
-          if (itemValue != quanhuyenid) {
-            setQuanHuyenId(itemValue);
-          }
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('ChonDiaDiemSc', {LOAI: 1, ID: tinhthanhid});
         }}>
-        {dataquanhuyen.map((val, i) => {
-          return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
-        })}
-      </Picker>
-
+        <TextInput
+          editable={false}
+          style={styles.textInput}
+          label="Quận huyện"
+          placeholder="Quận huyện"
+          value={tenQuanHuyen}
+        />
+      </TouchableOpacity>
       {/* Phường xã */}
-      <Picker
-        style={styles.combobox}
-        selectedValue={phuongxaid}
-        onValueChange={(itemValue, itemIndex) => {
-          setPhuongXaId(itemValue);
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('ChonDiaDiemSc', {LOAI: 2, ID: quanhuyenid});
         }}>
-        {dataphuongxa.map((val, i) => {
-          val.key = val.ID;
-          return <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />;
-        })}
-      </Picker>
+        <TextInput
+          editable={false}
+          style={styles.textInput}
+          label="Phường xã"
+          placeholder="Phường xã"
+          value={tenPhuongXa}
+        />
+      </TouchableOpacity>
+
       <TextInput
         style={styles.textInput}
         label="Địa chỉ người nhận"
@@ -178,17 +184,6 @@ function ThanhToan({navigation, route}) {
         style={styles.btn}
         mode="contained"
         onPress={() => {
-          let params = {
-            id,
-            name,
-            dienthoai,
-            diachi,
-            ghichu,
-            tinhthanhid,
-            quanhuyenid,
-            phuongxaid,
-          };
-          dispatch(SetPayment(params));
           setShowModal(true);
         }}>
         <Text>Thanh toán</Text>
@@ -232,42 +227,3 @@ const styles = StyleSheet.create({
 });
 
 export default ThanhToan;
-
-// function thucHienThanhToan(
-//   dispatch,
-//   {
-//     id,
-//     name,
-//     dienthoai,
-//     diachi,
-//     ghichu,
-//     tinhthanhid,
-//     quanhuyenid,
-//     phuongxaid,
-//     //cod,
-//   },
-//   dsChiTiet,
-//   tiLeGiamGia
-// ) {
-//   //chuẩn bị dữ liệu
-//   let donHang = {};
-//   donHang.DKHACHHANGID = id;
-//   donHang.TENNGUOINHAN = name;
-//   donHang.DIENTHOAI = dienthoai;
-//   donHang.DIACHI = diachi;
-//   donHang.GHICHU = ghichu;
-//   donHang.DTINHTHANHID = tinhthanhid;
-//   donHang.DQUANHUYENID = quanhuyenid;
-//   donHang.DPHUONGXAID = phuongxaid;
-//   //donHang.COD = cod ? 30 : 0;
-//   donHang.TILEGIAMGIA = tiLeGiamGia;
-//   donHang.TDONHANGCHITIETs = dsChiTiet;
-//   HttpClient.GetJson('thucHienThanhToan', donHang).then(json => {
-//     if (json.isSuccess) {
-//       alert('Đặt hàng thành công');
-//       dispatch(ClearToCart());
-//     } else {
-//       alert(json.message);
-//     }
-//   });
-// }

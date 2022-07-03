@@ -2,7 +2,7 @@ import { INCRETOCART, DECRETOCART, REMOVETOCART, CLEARTOCART, SETPAYMENT } from 
 
 const initCartSate = {
   data: [],
-  info: {}
+  // info: {}
 };
 
 const cartReducer = (state = initCartSate, action) => {
@@ -42,14 +42,14 @@ const cartReducer = (state = initCartSate, action) => {
     };
   }
 
-  if (action.type == SETPAYMENT) {
-    return {
-      ...state, info: {
-        ...state.info,
-        ...action.payload
-      }
-    };
-  }
+  // if (action.type == SETPAYMENT) {
+  //   return {
+  //     ...state, info: {
+  //       ...state.info,
+  //       ...action.payload
+  //     }
+  //   };
+  // }
   
   return state;
 };

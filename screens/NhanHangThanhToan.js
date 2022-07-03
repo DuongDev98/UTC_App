@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, DeviceEventEmitter} from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import HttpClient from '../utils/HttpClient';
 
-function NhanHangThanhToan(props) {
+function NhanHangThanhToan({navigation, route}) {
   const userInfo = useSelector(state => state.userInfo);
   const [codeRandom, setCodeRandom] = useState('');
   const [codeInput, setCodeInput] = useState('');
@@ -17,6 +17,7 @@ function NhanHangThanhToan(props) {
           label="Mã xác nhận"
           placeholder="Nhập mã xác nhận"
           onChangeText={text => setCodeInput(text)}
+          keyboardType='numeric'
         />
         <Text
           style={[styles.lblLink, {flex: 1}]}
@@ -26,7 +27,7 @@ function NhanHangThanhToan(props) {
             setCodeRandom(temp.toString());
             GuiEmail(temp, userInfo.EMAIL);
           }}>
-          Lấy mã
+          {codeRandom.length == 0 ? "Lấy mã" : "Gửi lại"}
         </Text>
       </View>
       <Button
@@ -38,7 +39,8 @@ function NhanHangThanhToan(props) {
           } else if (codeRandom != codeInput) {
             alert('Mã xác nhận không đúng');
           } else if (codeRandom == codeInput && codeInput.length > 0) {
-            //props.route.params.callBack;
+            navigation.goBack();
+            DeviceEventEmitter.emit("payment", 0);
           } else {
             alert('Vui lòng xác nhận đơn hàng');
           }

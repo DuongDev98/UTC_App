@@ -5,53 +5,18 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  DeviceEventEmitter,
+} from 'react-native';
 import {TextInput, Button, IconButton} from 'react-native-paper';
 import Loadding from 'react-native-loading-spinner-overlay';
-import {Picker} from '@react-native-picker/picker';
 import HttpClient from '../utils/HttpClient';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {SetUser} from '../reducers/actionCreator';
-
-// function layDuLieuTinhThanh(
-//   datatinhthanh,
-//   setDataTinhThanh,
-//   setDataQuanHuyen,
-//   setDataPhuongXa,
-// ) {
-//   HttpClient.GetJson('dsTinhThanh', null).then(json => {
-//     if (json.isSuccess) {
-//       setDataTinhThanh(json.data.arr);
-//     } else {
-//       alert(json.message);
-//     }
-//   });
-// }
-
-// function layDuLieuQuanHuyen(setDataQuanHuyen, setDataPhuongXa, tinhthanhid) {
-//   if (tinhthanhid.length > 0) {
-//     HttpClient.GetJson('dsQuanHuyen', {ID: tinhthanhid}).then(json => {
-//       if (json.isSuccess) {
-//         setDataQuanHuyen(json.data.arr);
-//         layDuLieuPhuongXa(setDataPhuongXa, '');
-//       } else {
-//         alert(json.message);
-//       }
-//     });
-//   }
-// }
-
-// function layDuLieuPhuongXa(setDataPhuongXa, quanhuyenid) {
-//   if (quanhuyenid.length > 0) {
-//     HttpClient.GetJson('dsPhuongXa', {ID: quanhuyenid}).then(json => {
-//       if (json.isSuccess) {
-//         setDataPhuongXa(json.data.arr);
-//       } else {
-//         alert(json.message);
-//       }
-//     });
-//   }
-// }
 
 function capNhatDuLieu(setLoadding, data, callback) {
   let o = {
@@ -93,8 +58,9 @@ function capNhatDuLieu(setLoadding, data, callback) {
   }
 }
 
-function EditProfile() {
-  const userInfo = useSelector(state=>state.userInfo);
+function EditProfile({navigation, route}) {
+  const dispatch = useDispatch();
+  const userInfo = useSelector(state => state.userInfo);
   const [loadding, setLoadding] = useState(false);
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -102,23 +68,11 @@ function EditProfile() {
   const [email, setEmail] = useState('');
   const [diachi, setDiaChi] = useState('');
   const [tinhthanhid, setTinhThanhId] = useState('');
+  const [tenTinhThanh, setTenTinhThanh] = useState('');
   const [quanhuyenid, setQuanHuyenId] = useState('');
+  const [tenQuanHuyen, setTenQuanHuyen] = useState('');
   const [phuongxaid, setPhuongXaId] = useState('');
-  const [datatinhthanh, setDataTinhThanh] = useState([]);
-  useEffect(() => {
-    //callback
-    if (tinhthanhid && tinhthanhid.length > 0) setTinhThanhId(tinhthanhid);
-  }, [datatinhthanh]);
-  const [dataquanhuyen, setDataQuanHuyen] = useState([]);
-  useEffect(() => {
-    //callback
-    if (quanhuyenid && quanhuyenid.length > 0) setQuanHuyenId(quanhuyenid);
-  }, [dataquanhuyen]);
-  const [dataphuongxa, setDataPhuongXa] = useState([]);
-  useEffect(() => {
-    //callback
-    if (phuongxaid && phuongxaid.length > 0) setPhuongXaId(phuongxaid);
-  }, [dataphuongxa]);
+  const [tenPhuongXa, setTenPhuongXa] = useState('');
 
   useEffect(() => {
     setId(userInfo.ID);
@@ -127,38 +81,37 @@ function EditProfile() {
     setDiaChi(userInfo.DIACHI);
     setEmail(userInfo.EMAIL);
     setTinhThanhId(userInfo.DTINHTHANHID);
+    setTenTinhThanh(userInfo.DTINHTHANH_NAME);
     setQuanHuyenId(userInfo.DQUANHUYENID);
+    setTenQuanHuyen(userInfo.DQUANHUYEN_NAME);
     setPhuongXaId(userInfo.DPHUONGXAID);
-    HttpClient.GetJson('dsTinhThanh', null).then(json => {
-      if (json.isSuccess) {
-        setDataTinhThanh(json.data.arr);
-      } else {
-        alert(json.message);
-      }
+    setTenPhuongXa(userInfo.DPHUONGXA_NAME);
+
+    DeviceEventEmitter.addListener('chonTinhThanh', (p1, p2) => {
+      setTinhThanhId(p1);
+      setTenTinhThanh(p2);
+      setQuanHuyenId('');
+      setTenQuanHuyen('');
+      setPhuongXaId('');
+      setTenPhuongXa('');
     });
+
+    DeviceEventEmitter.addListener('chonQuanHuyen', (p1, p2) => {
+      setQuanHuyenId(p1);
+      setTenQuanHuyen(p2);
+      setPhuongXaId('');
+      setTenPhuongXa('');
+    });
+
+    DeviceEventEmitter.addListener('chonPhuongXa', (p1, p2) => {
+      setPhuongXaId(p1);
+      setTenPhuongXa(p2);
+    });
+
+    return () => {
+      DeviceEventEmitter.removeAllListeners();
+    };
   }, []);
-
-  useEffect(() => {
-    HttpClient.GetJson('dsQuanHuyen', {ID: tinhthanhid}).then(json => {
-      if (json.isSuccess) {
-        setDataQuanHuyen(json.data.arr);
-      } else {
-        alert(json.message);
-      }
-    });
-  }, [tinhthanhid]);
-
-  useEffect(() => {
-    HttpClient.GetJson('dsPhuongXa', {ID: quanhuyenid}).then(json => {
-      if (json.isSuccess) {
-        setDataPhuongXa(json.data.arr);
-      } else {
-        alert(json.message);
-      }
-    });
-  }, [quanhuyenid]);
-
-  const dispatch = useDispatch();
 
   return (
     <>
@@ -188,51 +141,45 @@ function EditProfile() {
             onChangeText={text => setEmail(text)}
           />
           {/* Tỉnh thành */}
-          <Picker
-            style={styles.combobox}
-            selectedValue={tinhthanhid}
-            onValueChange={(itemValue, itemIndex) => {
-              if (itemValue != tinhthanhid) {
-                setTinhThanhId(itemValue);
-              }
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChonDiaDiemSc', {LOAI: 0});
             }}>
-            {datatinhthanh.map((val, i) => {
-              return (
-                <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />
-              );
-            })}
-          </Picker>
-
+            <TextInput
+              editable={false}
+              style={styles.textInput}
+              label="Tỉnh thành"
+              placeholder="Tỉnh thành"
+              value={tenTinhThanh}
+            />
+          </TouchableOpacity>
           {/* Quận huyện */}
-          <Picker
-            style={styles.combobox}
-            selectedValue={quanhuyenid}
-            onValueChange={(itemValue, itemIndex) => {
-              if (itemValue != quanhuyenid) {
-                setQuanHuyenId(itemValue);
-              }
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChonDiaDiemSc', {LOAI: 1, ID: tinhthanhid});
             }}>
-            {dataquanhuyen.map((val, i) => {
-              return (
-                <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />
-              );
-            })}
-          </Picker>
-
+            <TextInput
+              editable={false}
+              style={styles.textInput}
+              label="Quận huyện"
+              placeholder="Quận huyện"
+              value={tenQuanHuyen}
+            />
+          </TouchableOpacity>
           {/* Phường xã */}
-          <Picker
-            style={styles.combobox}
-            selectedValue={phuongxaid}
-            onValueChange={(itemValue, itemIndex) => {
-              setPhuongXaId(itemValue);
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChonDiaDiemSc',{LOAI: 2, ID: quanhuyenid});
             }}>
-            {dataphuongxa.map((val, i) => {
-              val.key = val.ID;
-              return (
-                <Picker.Item key={val.ID} label={val.NAME} value={val.ID} />
-              );
-            })}
-          </Picker>
+            <TextInput
+              editable={false}
+              style={styles.textInput}
+              label="Phường xã"
+              placeholder="Phường xã"
+              value={tenPhuongXa}
+            />
+          </TouchableOpacity>
+
           <TextInput
             style={styles.textInput}
             label="Địa chỉ"
@@ -244,26 +191,33 @@ function EditProfile() {
             style={styles.btn}
             mode="contained"
             onPress={() =>
-              capNhatDuLieu(setLoadding, {
-                id: id,
-                name: name,
-                dienthoai: dienthoai,
-                email: email,
-                tinhthanhid: tinhthanhid,
-                quanhuyenid: quanhuyenid,
-                phuongxaid: phuongxaid,
-                diachi: diachi,
-              }, ()=>{
-                let params = {};
-                params.NAME = name;
-                params.DIENTHOAI = dienthoai;
-                params.EMAIL = email;
-                params.DTINHTHANHID = tinhthanhid;
-                params.DQUANHUYENID = quanhuyenid;
-                params.DPHUONGXAID = phuongxaid;
-                params.DIACHI = diachi;
-                dispatch(SetUser(params));
-              })
+              capNhatDuLieu(
+                setLoadding,
+                {
+                  id: id,
+                  name: name,
+                  dienthoai: dienthoai,
+                  email: email,
+                  tinhthanhid: tinhthanhid,
+                  quanhuyenid: quanhuyenid,
+                  phuongxaid: phuongxaid,
+                  diachi: diachi,
+                },
+                () => {
+                  let params = {};
+                  params.NAME = name;
+                  params.DIENTHOAI = dienthoai;
+                  params.EMAIL = email;
+                  params.DTINHTHANHID = tinhthanhid;
+                  params.DTINHTHANH_NAME = tenTinhThanh;
+                  params.DQUANHUYENID = quanhuyenid;
+                  params.DQUANHUYEN_NAME = tenQuanHuyen;
+                  params.DPHUONGXAID = phuongxaid;
+                  params.DPHUONGXA_NAME = tenPhuongXa;
+                  params.DIACHI = diachi;
+                  dispatch(SetUser(params));
+                },
+              )
             }>
             <Text>Cập nhật</Text>
           </Button>
@@ -288,16 +242,11 @@ const styles = StyleSheet.create({
   },
   combobox: {
     marginTop: 5,
-    paddingTop: 32,
-    paddingBottom: 32,
-    paddingLeft: 10,
+    padding: 10,
     backgroundColor: 'white',
     marginBottom: 2,
     elevation: 1,
     shadowColor: 'black',
-  },
-  diaDiemText: {
-    fontSize: 16,
   },
 });
 
