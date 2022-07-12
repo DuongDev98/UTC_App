@@ -44,7 +44,7 @@ function FlashScreen({navigation}) {
         }).catch(err=>{
             alert(err);
         });;
-    });
+    }, []);
 
     return (
         <View style={styles.container}>

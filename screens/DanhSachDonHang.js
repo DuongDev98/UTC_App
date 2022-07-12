@@ -14,7 +14,7 @@ function DanhSachDonHang({route}) {
           style={{padding: 10}}
           data={arr}
           renderItem={({item}) => (
-            <>
+            <View style={styles.bgr}>
               <View style={[styles.donhang, {backgroundColor: '#c0d7fc'}]}>
                 <View style={styles.donHangHeader}>
                   <Text style={[styles.donHangHeaderItem, {textAlign: 'left'}]}>
@@ -56,7 +56,7 @@ function DanhSachDonHang({route}) {
                   </Text>
                 </View>
               </View>
-            </>
+            </View>
           )}
         />
       )}
@@ -65,10 +65,20 @@ function DanhSachDonHang({route}) {
 }
 
 const styles = StyleSheet.create({
+  bgr: {
+    backgroundColor: 'white',
+    marginTop: 10,
+    // borderRadius: 8,
+    borderColor: 'red',
+    shadowColor: '#000',
+    shadowOffset: {width: 10, height: 10},
+    shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
+    elevation: 8,
+  },
   donhang: {
     padding: 10,
     backgroundColor: 'white',
-    marginTop: 5,
   },
   donHangHeader: {
     flexDirection: 'row',

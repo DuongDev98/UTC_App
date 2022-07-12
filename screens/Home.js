@@ -68,16 +68,16 @@ function Home({navigation}) {
     return () => {
       isMounted = false;
     };
-  });
+  }, []);
 
   return (
     <View style={styles.container}>
       {/* top */}
       <View style={styles.topbar}>
         <View style={styles.pntitle}>
-          <Icon style={styles.title} name="heart-outline" size={30} />
-          <Text style={[styles.title, {fontSize: 25}]}>Trang chủ</Text>
-          <Icon style={styles.title} name="heart-outline" size={30} />
+          <Icon style={[styles.title, {color: 'white'}]} name="heart-outline" size={30} />
+          <Text style={[styles.title, {fontSize: 25, color: 'white'}]}>Trang chủ</Text>
+          <Icon style={[styles.title, {color: 'white'}]} name="heart-outline" size={30} />
         </View>
       </View>
       {/* tim kiem */}
@@ -115,8 +115,9 @@ function Home({navigation}) {
         {/* danh sach nhom hang theo hang ngang, nut xem them */}
         <View style={{padding: 10}}>
           <Text style={styles.titleNhom}>Nhóm hàng</Text>
-          {dataNhomHangs.map((item, i) => {
-            return (
+          {dataNhomHangs.map((item, i) => {            
+            if (item.DMATHANGs.length == 0) return null;
+            else return (
               <View key={item.ID}>
                 <View style={{flexDirection: 'row', padding: 10, backgroundColor: 'white'}}>
                   <Text style={{fontWeight: 'bold', fontSize: 20}}>
@@ -159,7 +160,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 60,
     justifyContent: 'center',
-    backgroundColor: '#ffe6a1',
+    //backgroundColor: '#ffe6a1',
+    backgroundColor: '#7c4fe3',
   },
   pntitle: {
     fontSize: 25,
@@ -185,8 +187,8 @@ const styles = StyleSheet.create({
   },
   itNhom: {
     marginHorizontal: 10,
-    width: width,
-    height: width,
+    width: 120,
+    height: 75,
     backgroundColor: '#a96bff',
     justifyContent: 'center',
     margin: 'auto',
@@ -195,7 +197,7 @@ const styles = StyleSheet.create({
   textNhom: {
     textAlign: 'center',
     color: 'white',
-    fontSize: 30,
+    fontSize: 20,
   },
 });
 

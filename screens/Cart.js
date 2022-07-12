@@ -1,5 +1,5 @@
 import React, {Component, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity, Dimensions} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {IconButton} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
@@ -22,12 +22,13 @@ function xoaMatHang(dispatch, item) {
   dispatch(RemoveToCart(item.DMATHANGID));
 }
 
+let width = Dimensions.get('window').width;
 function itemList(dispatch, item) {
   return (
     <View key={item.DMATHANGID} style={styles.item}>
       <Image style={styles.avatar} source={{uri: item.AVATAR.url}} />
       <View style={styles.pnContent}>
-        <Text style={styles.title}>{item.NAME}</Text>
+        <Text style={[styles.title, { width: width - 110 }]}>{item.NAME}</Text>
         <Text style={styles.title}>Đơn giá: {item.DONGIA}</Text>
         <View
           style={{

@@ -40,7 +40,10 @@ function NhanHangThanhToan({navigation, route}) {
             alert('Mã xác nhận không đúng');
           } else if (codeRandom == codeInput && codeInput.length > 0) {
             navigation.goBack();
-            DeviceEventEmitter.emit("payment", 0);
+            var item = route.params;
+            item.PHUONGTHUCTHANHTOAN = 0;
+            console.log(item);
+            DeviceEventEmitter.emit("payment", item);
           } else {
             alert('Vui lòng xác nhận đơn hàng');
           }

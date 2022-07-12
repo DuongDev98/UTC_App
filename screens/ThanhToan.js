@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {ClearToCart} from '../reducers/actionCreator';
 
 function ThanhToan({navigation, route}) {
+  const dispatch = useDispatch();
   const userInfo = useSelector(state => state.userInfo);
   const cartInfo = useSelector(state => state.cartInfo);
   const [showModal, setShowModal] = useState(false);
@@ -34,8 +35,8 @@ function ThanhToan({navigation, route}) {
     setPhuongXaId(userInfo.DPHUONGXAID);
     setTenPhuongXa(userInfo.DPHUONGXA_NAME);
 
-    DeviceEventEmitter.addListener('payment', paymentMethod =>
-      thucHienThanhToan(paymentMethod),
+    DeviceEventEmitter.addListener('payment', (donHang) =>
+      thucHienThanhToan(donHang),
     );
 
     DeviceEventEmitter.addListener('chonTinhThanh', (p1, p2) => {
@@ -64,20 +65,8 @@ function ThanhToan({navigation, route}) {
     };
   }, []);
 
-  function thucHienThanhToan(paymentMethod) {
+  function thucHienThanhToan(donHang) {
     setShowModal(false);
-    let donHang = {};
-    donHang.DKHACHHANGID = id;
-    donHang.TENNGUOINHAN = name;
-    donHang.DIENTHOAI = dienthoai;
-    donHang.DIACHI = diachi;
-    donHang.GHICHU = ghichu;
-    donHang.DTINHTHANHID = tinhthanhid;
-    donHang.DQUANHUYENID = quanhuyenid;
-    donHang.DPHUONGXAID = phuongxaid;
-    donHang.TILEGIAMGIA = route.params.tiLeGiamGia;
-    donHang.HINHTHUCTHANHTOAN = paymentMethod;
-    donHang.TDONHANGCHITIETs = cartInfo.data;
     HttpClient.GetJson('thucHienThanhToan', donHang).then(json => {
       if (json.isSuccess) {
         alert('Đặt hàng thành công');
@@ -94,7 +83,21 @@ function ThanhToan({navigation, route}) {
       <Button
         style={styles.btn}
         mode="contained"
-        onPress={() => navigation.navigate('NhanHangThanhToanSc')}>
+        onPress={() => {
+          let donHang = {};
+          donHang.DKHACHHANGID = id;
+          donHang.TENNGUOINHAN = name;
+          donHang.DIENTHOAI = dienthoai;
+          donHang.DIACHI = diachi;
+          donHang.GHICHU = ghichu;
+          donHang.DTINHTHANHID = tinhthanhid;
+          donHang.DQUANHUYENID = quanhuyenid;
+          donHang.DPHUONGXAID = phuongxaid;
+          donHang.TILEGIAMGIA = route.params.tiLeGiamGia;
+          //donHang.HINHTHUCTHANHTOAN = paymentMethod;
+          donHang.TDONHANGCHITIETs = cartInfo.data;
+          navigation.navigate('NhanHangThanhToanSc', donHang);
+        }}>
         <Text>Nhận hàng thanh toán</Text>
       </Button>
 

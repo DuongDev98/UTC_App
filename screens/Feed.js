@@ -26,15 +26,15 @@ function Feed({navigation}) {
     return () => {
       isMounted = false;
     };
-  });
+  }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.topbar}>
         <View style={styles.pntitle}>
-          <Icon style={styles.title} name="leaf-outline" size={30} />
-          <Text style={[styles.title, {fontSize: 25}]}>Tin tức</Text>
-          <Icon style={styles.title} name="leaf-outline" size={30} />
+          <Icon style={[styles.title, {color: 'white'}]} name="leaf-outline" size={30} />
+          <Text style={[styles.title, {fontSize: 25, color: 'white'}]}>Tin tức</Text>
+          <Icon style={[styles.title, {color: 'white'}]} name="leaf-outline" size={30} />
         </View>
       </View>
       {tinTucs.length == 0 ? (
@@ -84,7 +84,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 60,
     justifyContent: 'center',
-    backgroundColor: '#ffe6a1',
+    // backgroundColor: '#ffe6a1',
+    backgroundColor: '#7c4fe3',
   },
   pntitle: {
     fontSize: 25,

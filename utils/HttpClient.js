@@ -31,9 +31,9 @@ class HttpClient{
         {
             data = {};
             data.isSuccess = false;
-            data.message = "Có lỗi trong quá trình tải dữ liệu";
+            //data.message = "Có lỗi trong quá trình tải dữ liệu";
+            data.message = "Lỗi mạng";
         }
-
         return data;
     }
 }
