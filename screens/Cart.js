@@ -30,6 +30,7 @@ function itemList(dispatch, item) {
       <View style={styles.pnContent}>
         <Text style={[styles.title, { width: width - 110 }]}>{item.NAME}</Text>
         <Text style={styles.title}>Đơn giá: {item.DONGIA}</Text>
+        <Text style={styles.title}>Tồn kho: {item.TONKHO}</Text>
         <View
           style={{
             flexDirection: 'row',
@@ -46,7 +47,16 @@ function itemList(dispatch, item) {
           </Text>
           <TouchableOpacity
             style={styles.btn}
-            onPress={() => tangSl(dispatch, item)}>
+            onPress={() => {
+              if (item.SOLUONG < item.TONKHO)
+              {
+                tangSl(dispatch, item)
+              }
+              else
+              {
+                alert("Tồn kho không đủ sl xuất");
+              }
+            }}>
             <MaterialCommunityIcons name="numeric-positive-1" size={35} />
           </TouchableOpacity>
           <TouchableOpacity
@@ -73,7 +83,7 @@ function thanhToan(navigation, cartInfo, userInfo, tiLeGiamGia) {
 
 function Cart({navigation}) {
   let cartInfo = useSelector(state => state.cartInfo);
-  let userInfo = useSelector(state => state.userInfo);  
+  let userInfo = useSelector(state => state.userInfo);
   let [tienHang, setTienHang] = useState(0);
   let [tiLeGiamGia, setTiLeGiamGia] = useState(0);
   let [kms, setKMS] = useState([]);

@@ -14,6 +14,7 @@ function addToCart(dispatch, item) {
   o.DMATHANGID = item.ID;
   o.NAME = item.NAME;
   o.DONGIA = item.GIABAN;
+  o.TONKHO = item.TONKHO;
   o.SOLUONG = 1;
   o.AVATAR = item.images[0];
   dispatch(IncreToCart(o));
@@ -48,7 +49,10 @@ function MatHang({route}) {
       <ScrollView>
         <View style={styles.container}>
           <Text style={styles.title}>{item.NAME}</Text>
-          <Slideshow dataSource={item.images} height={(height * 2) / 3} />
+          <Slideshow dataSource={item.images} height={height / 2} />
+          {
+            item.TONKHO > 0 ? null: <Text style={styles.tonKho}>Đã hết hàng</Text>
+          }
           {/* <Rating type="heart" ratingCount={5} onFinishRating={() => {}} /> */}
           <Text style={[styles.number]}>Giá bán: {item.GIABAN}</Text>
           <Text style={[styles.text]}>Mô tả</Text>
@@ -62,12 +66,14 @@ function MatHang({route}) {
           </View>
         </View>
       </ScrollView>
-      <IconButton
-        color="white"
-        icon={'cart'}
-        style={styles.btnThem}
-        onPress={() => addToCart(dispatch, item)}
-      />
+      {
+            item.TONKHO > 0 ? <IconButton
+              color="white"
+              icon={'cart'}
+              style={styles.btnThem}
+              onPress={() => addToCart(dispatch, item)}
+            />: null
+      }
     </>
   );
 }
@@ -87,6 +93,14 @@ const styles = StyleSheet.create({
     fontSize: 25,
     textAlign: 'center',
     backgroundColor: '#ffe6a1',
+  },
+  tonKho: {
+    marginBottom: 10,
+    padding: 10,
+    fontSize: 25,
+    textAlign: 'center',
+    backgroundColor: 'yellow',
+    color: "red"
   },
   number: {
     padding: 10,

@@ -25,7 +25,7 @@ function NhanHangThanhToan({navigation, route}) {
             let temp = 111111;
             temp = Math.floor(Math.random() * 999999);
             setCodeRandom(temp.toString());
-            GuiEmail(temp, userInfo.EMAIL);
+            GuiEmail(temp, userInfo.EMAIL, route.params);
           }}>
           {codeRandom.length == 0 ? "Lấy mã" : "Gửi lại"}
         </Text>
@@ -42,7 +42,6 @@ function NhanHangThanhToan({navigation, route}) {
             navigation.goBack();
             var item = route.params;
             item.PHUONGTHUCTHANHTOAN = 0;
-            console.log(item);
             DeviceEventEmitter.emit("payment", item);
           } else {
             alert('Vui lòng xác nhận đơn hàng');
@@ -54,8 +53,8 @@ function NhanHangThanhToan({navigation, route}) {
   );
 }
 
-function GuiEmail(code, email) {
-  HttpClient.GetJson('guiEmailXacNhan', {CODE: code, EMAIL: email}).then(
+function GuiEmail(code, email, donHang) {
+  HttpClient.GetJson('guiEmailXacNhan', {CODE: code, EMAIL: email, donHang: donHang}).then(
     json => {
       if (json.isSuccess) {
         alert('Vui lòng kiểm tra email: ' + email + ' để lấy mã xác nhận');

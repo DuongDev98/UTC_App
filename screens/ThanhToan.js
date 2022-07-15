@@ -71,7 +71,8 @@ function ThanhToan({navigation, route}) {
       if (json.isSuccess) {
         alert('Đặt hàng thành công');
         dispatch(ClearToCart());
-        navigation.goBack();
+        //navigation.goBack();
+        navigation.navigate("MainSc");
       } else {
         alert(json.message);
       }

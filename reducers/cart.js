@@ -6,7 +6,6 @@ const initCartSate = {
 };
 
 const cartReducer = (state = initCartSate, action) => {
-
   if (action.type == INCRETOCART) {
     if(state.data.filter(item=>item.DMATHANGID==action.payload.DMATHANGID).length>0){
       return {
@@ -41,15 +40,6 @@ const cartReducer = (state = initCartSate, action) => {
       ...state, data: []
     };
   }
-
-  // if (action.type == SETPAYMENT) {
-  //   return {
-  //     ...state, info: {
-  //       ...state.info,
-  //       ...action.payload
-  //     }
-  //   };
-  // }
   
   return state;
 };
